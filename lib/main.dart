@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:speedo_meter/settings.dart';
+import 'Services/current_location_map.dart';
+import 'digital_meter.dart';
+import 'gauge_meter.dart';
+void main() => runApp(SpeedometerApp());
+
+class SpeedometerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Speedometer',
+      theme: ThemeData.dark(),
+      home: TabScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+class TabScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3, // Number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Speedo Meter',style: TextStyle(color: Colors.white),),
+          actions: [
+            IconButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
+            }, icon: Icon(Icons.settings))
+          ],
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.speed),text: "Digital",),
+              Tab(icon: Icon(Icons.shutter_speed),text: 'Gauge',),
+              Tab(icon: Icon(Icons.map),text: 'Map',),
+
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            Center(child: DigitalSpeedScreen()),
+            Center(child: SpeedometerScreen()),
+            Center(child: CurrentLocationMap()),
+            // Center(
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => SingleCity(
+            //             cityData: {
+            //               'name': 'Lahore',
+            //               'address': 'Lahore, Punjab, Pakistan',
+            //               'lat': 31.5497,
+            //               'lng': 74.3436,
+            //             },
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //     child: Text('Show Lahore on Map'),
+            //   ),
+            // ),
+          ],
+        ),
+
+      ),
+    );
+  }
+}
+
+
