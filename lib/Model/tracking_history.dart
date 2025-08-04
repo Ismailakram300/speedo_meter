@@ -27,6 +27,7 @@ class TrackingRecord {
 
   static TrackingRecord fromMap(Map<String, dynamic> map) => TrackingRecord(
     id: map['id'],
+
     distance: map['distance'],
     averageSpeed: map['averageSpeed'],
     topSpeed: map['topSpeed'],
