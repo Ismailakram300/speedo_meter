@@ -14,7 +14,6 @@ class TrackingRecord {
     required this.timestamp,
   });
 
-
   Map<String, dynamic> toMap() => {
     'id': id,
     'distance': distance,
