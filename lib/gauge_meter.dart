@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speedo_meter/widgets/stat_row.dart';
 import 'package:speedo_meter/widgets/tracking_ctrl.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -62,14 +63,18 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     });
   }
 
-  void _handleSpeedChange(double speed) {
+  void _handleSpeedChange(double speed) async{
+    final prefs = await SharedPreferences.getInstance();
+    final isAlertEnabled = prefs.getBool('isSpeedAlertEnabled') ?? true;
+
+
     if (!mounted) return;
 
     setState(() {
       _speed = speed;
     });
 
-    if (speed > _speedLimit && !_alertShown) {
+    if (isAlertEnabled && speed > _speedLimit && !_alertShown  ) {
       _alertShown = true;
       SpeedAlertHelper.showSpeedAlert(
         context: context,
