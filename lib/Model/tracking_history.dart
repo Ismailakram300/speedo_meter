@@ -5,7 +5,6 @@ class TrackingRecord {
   final double topSpeed;
   final Duration duration;
   final DateTime timestamp;
-
   TrackingRecord({
     this.id,
     required this.distance,
