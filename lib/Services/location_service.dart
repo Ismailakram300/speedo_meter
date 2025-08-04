@@ -20,7 +20,6 @@ class LocationService {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
           log("Location permission not granted.");
-
           return null;
         }
       }
