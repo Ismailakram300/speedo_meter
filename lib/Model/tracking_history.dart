@@ -17,7 +17,6 @@ class TrackingRecord {
 
   Map<String, dynamic> toMap() => {
     'id': id,
-
     'distance': distance,
     'averageSpeed': averageSpeed,
     'topSpeed': topSpeed,
