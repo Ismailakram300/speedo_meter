@@ -32,11 +32,11 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     _loadSpeedLimit();
     tracker.onSpeedChanged = _handleSpeedChange;
     // Manually simulate high speed to test alert
-    Future.delayed(Duration(seconds: 2), () {
-      _handleSpeedChange(
-        250,
-      ); // This should trigger the alert if speedLimit < 250
-    });
+    // Future.delayed(Duration(seconds: 2), () {
+    //   _handleSpeedChange(
+    //     250,
+    //   ); // This should trigger the alert if speedLimit < 250
+    // });
   }
   Future<void> _loadSpeedLimit() async {
     final dbLimit = await DatabaseHelper().getSpeedLimit();
