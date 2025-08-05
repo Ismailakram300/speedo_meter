@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speedo_meter/history.dart';
 
 import 'Database/database_helper.dart';
+import 'gauge_selection_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -1012,7 +1013,9 @@ activeColor: Colors.amber,
               showRateUsDialog(context);
             },
           ),
-          _buildSettingsTile("Privacy Policy", ""),
+          _buildSettingsTile("Privacy Policy","", onTap: (){
+            Navigator.push(context,MaterialPageRoute(builder: (_)=>GaugeSelectionScreen()));
+          }),
           _buildSettingsTile(
             "Share",
             "",

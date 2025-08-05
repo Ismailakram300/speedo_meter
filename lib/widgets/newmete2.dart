@@ -10,21 +10,22 @@ import 'package:speedo_meter/widgets/stat_row.dart';
 import 'package:speedo_meter/widgets/tracking_ctrl.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import 'Database/database_helper.dart';
-import 'Services/SpeedAlertHelper.dart';
-import 'distance_tracking.dart';
-import 'meter_with_timer.dart';
-import 'gauge_selection_screen.dart';
-import 'widgets/newguage.dart';
-import 'widgets/custom_gauge.dart';
-import 'widgets/digital_speedometer.dart';
+import '../Database/database_helper.dart';
+import '../Services/SpeedAlertHelper.dart';
+import '../distance_tracking.dart';
+import '../gauge_selection_screen.dart';
+import '../meter_with_timer.dart';
+import 'custom_gauge.dart';
+import 'digital_speedometer.dart';
+import 'newguage.dart';
 
-class SpeedometerScreen extends StatefulWidget {
+
+class SpeedometerScreen2 extends StatefulWidget {
   @override
-  _SpeedometerScreenState createState() => _SpeedometerScreenState();
+  _SpeedometerScreen2State createState() => _SpeedometerScreen2State();
 }
 
-class _SpeedometerScreenState extends State<SpeedometerScreen> {
+class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
   double _speed = 0.0; // in m/s
   String status = 'Idle';
   int _speedLimit = 200; // default fallback
@@ -34,7 +35,6 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
   Duration _elapsedTime = Duration.zero;
   Timer? _uiTimer;
   int _selectedGaugeType = 0; // 0: Default, 1: Custom, 2: Digital, 3: Enhanced
-  double _gaugeRotation = 0.0; // Rotation angle for the gauge
 
   @override
   void initState() {
@@ -51,14 +51,12 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _selectedGaugeType = prefs.getInt('selectedGaugeType') ?? 0;
-      _gaugeRotation = prefs.getDouble('gaugeRotation') ?? 0.0;
     });
   }
 
-  Future<void> _saveGaugePreference(int gaugeType, double rotation) async {
+  Future<void> _saveGaugePreference(int gaugeType) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('selectedGaugeType', gaugeType);
-    await prefs.setDouble('gaugeRotation', rotation);
   }
 
   void _setupTrackerListener() {
@@ -127,11 +125,9 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
   }
 
   Widget _buildGauge() {
-    Widget gaugeWidget;
-    
     switch (_selectedGaugeType) {
       case 0: // Default Gauge
-        gaugeWidget = SfRadialGauge(
+        return SfRadialGauge(
           axes: <RadialAxis>[
             RadialAxis(
               minimum: 0,
@@ -170,28 +166,24 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
             ),
           ],
         );
-        break;
-      
+
       case 1: // Custom Gauge
-        gaugeWidget = CustomPaint(
+        return CustomPaint(
           size: Size(300, 300),
           painter: GaugePainter(_speed),
         );
-        break;
-      
+
       case 2: // Digital Speedometer
-        gaugeWidget = DigitalSpeedometer(
+        return DigitalSpeedometer(
           speed: _speed,
           totalDistance: _distance,
         );
-        break;
-      
+
       case 3: // Enhanced Gauge
-        gaugeWidget = CustomSpeedometerGauge(speed: _speed);
-        break;
-      
+        return CustomSpeedometerGauge(speed: _speed);
+
       default:
-        gaugeWidget = SfRadialGauge(
+        return SfRadialGauge(
           axes: <RadialAxis>[
             RadialAxis(
               minimum: 0,
@@ -214,16 +206,6 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
           ],
         );
     }
-    
-    // Apply rotation if not zero
-    if (_gaugeRotation != 0.0) {
-      return Transform.rotate(
-        angle: _gaugeRotation,
-        child: gaugeWidget,
-      );
-    }
-    
-    return gaugeWidget;
   }
 
   @override
@@ -244,32 +226,25 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
               );
               if (result != null) {
                 setState(() {
-                  _selectedGaugeType = result['gaugeIndex'];
-                  _gaugeRotation = result['rotation'];
+                  _selectedGaugeType = result;
                 });
-                await _saveGaugePreference(_selectedGaugeType, _gaugeRotation);
+                await _saveGaugePreference(result);
               }
             },
             icon: Icon(Icons.tune),
             tooltip: 'Select Gauge Style',
           ),
-
           IconButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RotatedGaugeFullscreenPage(
-                    speed: _speed,
-                    gaugeType: _selectedGaugeType,
-                    rotation: _gaugeRotation,
-                    distance: _distance,
-                  ),
+                  builder: (context) => FullscreenGaugePage(speed: _speed),
                 ),
               );
             },
-            icon: Icon(Icons.rotate_right),
-            tooltip: 'Fullscreen Rotated Gauge',
+            icon: Icon(Icons.crop_rotate),
+            tooltip: 'Fullscreen View',
           ),
         ],
       ),
@@ -291,12 +266,12 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
                   value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
                   title2: 'Top Speed',
                   value2:
-                      '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                  '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
                 ),
                 StatRow(
                   title1: 'Avg Speed',
                   value1:
-                      '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                  '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
                   title2: 'Duration',
                   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
                 ),
@@ -314,169 +289,6 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
               },
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class RotatedGaugeFullscreenPage extends StatefulWidget {
-  final double speed;
-  final int gaugeType;
-  final double rotation;
-  final double distance;
-
-  const RotatedGaugeFullscreenPage({
-    Key? key,
-    required this.speed,
-    required this.gaugeType,
-    required this.rotation,
-    required this.distance,
-  }) : super(key: key);
-
-  @override
-  State<RotatedGaugeFullscreenPage> createState() => _RotatedGaugeFullscreenPageState();
-}
-
-class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage> {
-  double currentRotation = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    currentRotation = widget.rotation;
-  }
-
-  Widget _buildFullscreenGauge() {
-    Widget gaugeWidget;
-    
-    switch (widget.gaugeType) {
-      case 0: // Default Gauge
-        gaugeWidget = SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              minimum: 0,
-              maximum: 180,
-              ranges: <GaugeRange>[
-                GaugeRange(startValue: 0, endValue: 60, color: Colors.green),
-                GaugeRange(startValue: 60, endValue: 120, color: Colors.orange),
-                GaugeRange(startValue: 120, endValue: 180, color: Colors.red),
-              ],
-              pointers: <GaugePointer>[NeedlePointer(value: widget.speed)],
-              annotations: <GaugeAnnotation>[
-                GaugeAnnotation(
-                  widget: Text(
-                    '${widget.speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  angle: 90,
-                  positionFactor: 0.5,
-                ),
-              ],
-            ),
-          ],
-        );
-        break;
-      
-      case 1: // Custom Gauge
-        gaugeWidget = CustomPaint(
-          size: Size(400, 400),
-          painter: GaugePainter(widget.speed),
-        );
-        break;
-      
-      case 2: // Digital Speedometer
-        gaugeWidget = DigitalSpeedometer(
-          speed: widget.speed,
-          totalDistance: widget.distance,
-        );
-        break;
-      
-      case 3: // Enhanced Gauge
-        gaugeWidget = CustomSpeedometerGauge(speed: widget.speed);
-        break;
-      
-      default:
-        gaugeWidget = SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              minimum: 0,
-              maximum: 180,
-              pointers: <GaugePointer>[NeedlePointer(value: widget.speed)],
-              annotations: <GaugeAnnotation>[
-                GaugeAnnotation(
-                  widget: Text(
-                    '${widget.speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  angle: 90,
-                  positionFactor: 0.5,
-                ),
-              ],
-            ),
-          ],
-        );
-    }
-    
-    return Transform.rotate(
-      angle: currentRotation,
-      child: gaugeWidget,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Rotated Gauge View',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                currentRotation -= 0.1;
-              });
-            },
-            icon: Icon(Icons.rotate_left, color: Colors.white),
-            tooltip: 'Rotate Left',
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                currentRotation = 0.0;
-              });
-            },
-            icon: Icon(Icons.refresh, color: Colors.white),
-            tooltip: 'Reset Rotation',
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                currentRotation += 0.1;
-              });
-            },
-            icon: Icon(Icons.rotate_right, color: Colors.white),
-            tooltip: 'Rotate Right',
-          ),
-        ],
-      ),
-      body: Center(
-        child: RotatedBox(
-          quarterTurns: 1,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: _buildFullscreenGauge(),
-          ),
         ),
       ),
     );

@@ -44,26 +44,28 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
 
     if (!serviceEnabled) {
       // Show dialog to open location settings
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Location Disabled"),
-          content: const Text("Please enable location services."),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                await Geolocator.openLocationSettings();
-                Navigator.of(context).pop();
-              },
-              child: const Text("Open Settings"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
-            ),
-          ],
-        ),
-      );
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Location Disabled"),
+            content: const Text("Please enable location services."),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await Geolocator.openLocationSettings();
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Open Settings"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel"),
+              ),
+            ],
+          ),
+        );
+      }
       return;
     }
 
@@ -71,33 +73,48 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Location permission denied.")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Location permission denied.")),
+          );
+        }
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Permission permanently denied.")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Permission permanently denied.")),
+        );
+      }
       return;
     }
 
-    final position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _currentPosition = position;
-      _markers['currentLocation'] = Marker(
-        markerId: const MarkerId('currentLocation'),
-        position: LatLng(position.latitude, position.longitude),
-        infoWindow: const InfoWindow(title: 'You are here'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      );
-    });
-    await _getAddressFromLatLng(position);
-
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+          _markers['currentLocation'] = Marker(
+            markerId: const MarkerId('currentLocation'),
+            position: LatLng(position.latitude, position.longitude),
+            infoWindow: const InfoWindow(title: 'You are here'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          );
+        });
+        await _getAddressFromLatLng(position);
+      }
+    } catch (e) {
+      print("Error getting current location: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error getting location: $e")),
+        );
+      }
+    }
   }
+
   String? _currentAddress;
   Future<void> _getAddressFromLatLng(Position position) async {
     try {
@@ -108,16 +125,20 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
 
       Placemark place = placemarks.first;
 
-      setState(() {
-        _currentAddress =
-        "${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}";
-      });
+      if (mounted) {
+        setState(() {
+          _currentAddress =
+          "${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}";
+        });
+      }
 
     } catch (e) {
       print("Error fetching address: $e");
-      setState(() {
-        _currentAddress = "Unable to fetch address.";
-      });
+      if (mounted) {
+        setState(() {
+          _currentAddress = "Unable to fetch address.";
+        });
+      }
     }
   }
 
@@ -177,30 +198,43 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
               children: [
                 if (_currentAddress != null)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.red ,size: 40,),
-                        Expanded(
-                          child: Text(
-                            _currentAddress!,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Current Address:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            _currentAddress!,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-
-                SizedBox(height: 10,),
                 StatRow(
                   title1: 'Distance',
-                  value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
+                  value1: '${tracker.totalKm.toStringAsFixed(2)} km',
                   title2: 'Top Speed',
-                  value2: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                  value2: '${tracker.topSpeed.toStringAsFixed(1)} km/h',
                 ),
                 StatRow(
                   title1: 'Avg Speed',
-                  value1: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                  value1: '${tracker.averageSpeed.toStringAsFixed(1)} km/h',
                   title2: 'Duration',
                   value2: 'Time: ${_formatDuration(tracker.elapsedTime)}',
                 ),
@@ -212,11 +246,11 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
     );
   }
 
-  String _formatDuration(Duration duration) {
-    final twoDigits = (int n) => n.toString().padLeft(2, '0');
-    final h = twoDigits(duration.inHours);
-    final m = twoDigits(duration.inMinutes.remainder(60));
-    final s = twoDigits(duration.inSeconds.remainder(60));
+  String _formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final h = twoDigits(d.inHours);
+    final m = twoDigits(d.inMinutes.remainder(60));
+    final s = twoDigits(d.inSeconds.remainder(60));
     return "$h:$m:$s";
   }
 }

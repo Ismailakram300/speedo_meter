@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:speedo_meter/settings.dart';
+import 'package:speedo_meter/widgets/newmete2.dart';
+import 'package:speedo_meter/widgets/painter.dart';
 import 'Services/current_location_map.dart';
 import 'digital_meter.dart';
 import 'gauge_meter.dart';
+import 'gauge_selection_screen.dart';
 void main() => runApp(SpeedometerApp());
 
 class SpeedometerApp extends StatelessWidget {
@@ -23,7 +26,7 @@ class TabScreen extends StatelessWidget {
 
 
     return DefaultTabController(
-      length: 3, // Number of tabs
+      length: 4, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
           title: Text('Speedo Meter',style: TextStyle(color: Colors.white),),
@@ -32,6 +35,10 @@ class TabScreen extends StatelessWidget {
             IconButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
             }, icon: Icon(Icons.settings)),
+
+            // IconButton(onPressed: (){
+            //   Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomSpeedometerGauge(speed: 90,)));
+            // }, icon: Icon(Icons.settings)),
 
 
 
@@ -42,7 +49,7 @@ class TabScreen extends StatelessWidget {
               Tab(icon: Icon(Icons.speed),text: "Digital",),
               Tab(icon: Icon(Icons.shutter_speed),text: 'Gauge',),
               Tab(icon: Icon(Icons.map),text: 'Map',),
-              //Tab(icon: Icon(Icons.map),text: 'Map',),
+              Tab(icon: Icon(Icons.label),text: 'Map',),
 
             ],
           ),
@@ -52,6 +59,7 @@ class TabScreen extends StatelessWidget {
             Center(child: DigitalSpeedScreen()),
             Center(child: SpeedometerScreen()),
             Center(child: CurrentLocationMap()),
+            Center(child: GaugeSelectionScreen()),
                         // Center(
             //   child: ElevatedButton(
             //     onPressed: () {
