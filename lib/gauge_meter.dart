@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'Database/database_helper.dart';
 import 'Services/SpeedAlertHelper.dart';
 import 'distance_tracking.dart';
+import 'meter_with_timer.dart';
 
 class SpeedometerScreen extends StatefulWidget {
   @override
@@ -46,9 +47,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
   }
 
   void _setupTrackerListener() {
-
     tracker.onSpeedChanged = (double speed) {
-
       if (!mounted) return;
       setState(() {
         _speed = speed;
@@ -63,10 +62,9 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     });
   }
 
-  void _handleSpeedChange(double speed) async{
+  void _handleSpeedChange(double speed) async {
     final prefs = await SharedPreferences.getInstance();
     final isAlertEnabled = prefs.getBool('isSpeedAlertEnabled') ?? true;
-
 
     if (!mounted) return;
 
@@ -74,7 +72,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
       _speed = speed;
     });
 
-    if (isAlertEnabled && speed > _speedLimit && !_alertShown  ) {
+    if (isAlertEnabled && speed > _speedLimit && !_alertShown) {
       _alertShown = true;
       SpeedAlertHelper.showSpeedAlert(
         context: context,
@@ -84,18 +82,18 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
         autoDismiss: true, // Will dismiss after 5 seconds
         soundPath: 'sounds/warning.mp3',
       );
-
-
     }
 
     if (speed <= _speedLimit) {
       _alertShown = false;
     }
   }
+
   Future<void> _checkPermissions() async {
     await Permission.locationWhenInUse.request();
     //DistanceTracker().startTracking(); // ✅ Start tracking from here
   }
+
   String formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final h = twoDigits(d.inHours);
@@ -114,10 +112,24 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullscreenGaugePage(speed: _speed),
+                ),
+              );
+            },
+            icon: Icon(Icons.crop_rotate),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -172,11 +184,13 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
                   title1: 'Distance',
                   value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
                   title2: 'Top Speed',
-                  value2: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                  value2:
+                      '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
                 ),
                 StatRow(
                   title1: 'Avg Speed',
-                  value1: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                  value1:
+                      '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
                   title2: 'Duration',
                   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
                 ),
