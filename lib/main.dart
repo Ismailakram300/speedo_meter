@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:speedo_meter/settings.dart';
 import 'Services/current_location_map.dart';
 import 'digital_meter.dart';
@@ -19,21 +20,29 @@ class SpeedometerApp extends StatelessWidget {
 class TabScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+
     return DefaultTabController(
       length: 3, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
           title: Text('Speedo Meter',style: TextStyle(color: Colors.white),),
           actions: [
+
             IconButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
-            }, icon: Icon(Icons.settings))
-          ],
+            }, icon: Icon(Icons.settings)),
+
+
+
+
+    ],
           bottom: TabBar(
             tabs: [
               Tab(icon: Icon(Icons.speed),text: "Digital",),
               Tab(icon: Icon(Icons.shutter_speed),text: 'Gauge',),
               Tab(icon: Icon(Icons.map),text: 'Map',),
+              //Tab(icon: Icon(Icons.map),text: 'Map',),
 
             ],
           ),
@@ -43,7 +52,7 @@ class TabScreen extends StatelessWidget {
             Center(child: DigitalSpeedScreen()),
             Center(child: SpeedometerScreen()),
             Center(child: CurrentLocationMap()),
-            // Center(
+                        // Center(
             //   child: ElevatedButton(
             //     onPressed: () {
             //       Navigator.push(
