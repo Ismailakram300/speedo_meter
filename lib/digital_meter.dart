@@ -7,6 +7,7 @@ import 'package:speedo_meter/widgets/tracking_ctrl.dart';
 import 'Database/database_helper.dart';
 import 'Services/SpeedAlertHelper.dart';
 import 'distance_tracking.dart';
+import 'meter_with_timer.dart';
 
 class DigitalSpeedScreen extends StatefulWidget {
   @override
@@ -107,6 +108,21 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     final tracker = DistanceTracker();
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenDigitalMeter(speed: _speed),
+                ),
+              );
+            },
+            icon: Icon(Icons.crop_rotate),
+          ),
+        ],
+      ),
       backgroundColor: Colors.black,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
