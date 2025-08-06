@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'Database/database_helper.dart';
 import 'Services/SpeedAlertHelper.dart';
 import 'distance_tracking.dart';
+import 'main.dart';
 import 'meter_with_timer.dart';
 import 'gauge_selection_screen.dart';
 import 'widgets/newguage.dart';
@@ -50,14 +51,14 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
   Future<void> _loadGaugePreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedGaugeType = prefs.getInt('selectedGaugeType') ?? 0;
+      _selectedGaugeType = prefs.getInt('selectedGaugeIndex') ?? 0;
       _gaugeRotation = prefs.getDouble('gaugeRotation') ?? 0.0;
     });
   }
 
   Future<void> _saveGaugePreference(int gaugeType, double rotation) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('selectedGaugeType', gaugeType);
+    await prefs.setInt('selectedGaugeIndex', gaugeType);
     await prefs.setDouble('gaugeRotation', rotation);
   }
 
@@ -128,7 +129,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
 
   Widget _buildGauge() {
     Widget gaugeWidget;
-    
+
     switch (_selectedGaugeType) {
       case 0: // Default Gauge
         gaugeWidget = SfRadialGauge(
@@ -137,31 +138,16 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
               minimum: 0,
               maximum: 180,
               ranges: <GaugeRange>[
-                GaugeRange(
-                  startValue: 0,
-                  endValue: 60,
-                  color: Colors.green,
-                ),
-                GaugeRange(
-                  startValue: 60,
-                  endValue: 120,
-                  color: Colors.orange,
-                ),
-                GaugeRange(
-                  startValue: 120,
-                  endValue: 180,
-                  color: Colors.red,
-                ),
+                GaugeRange(startValue: 0, endValue: 60, color: Colors.green),
+                GaugeRange(startValue: 60, endValue: 120, color: Colors.orange),
+                GaugeRange(startValue: 120, endValue: 180, color: Colors.red),
               ],
               pointers: <GaugePointer>[NeedlePointer(value: _speed)],
               annotations: <GaugeAnnotation>[
                 GaugeAnnotation(
                   widget: Text(
                     '${_speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   angle: 90,
                   positionFactor: 0.5,
@@ -171,25 +157,72 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
           ],
         );
         break;
-      
+
       case 1: // Custom Gauge
         gaugeWidget = CustomPaint(
           size: Size(300, 300),
           painter: GaugePainter(_speed),
         );
         break;
-      
+
       case 2: // Digital Speedometer
         gaugeWidget = DigitalSpeedometer(
           speed: _speed,
           totalDistance: _distance,
         );
         break;
-      
+
       case 3: // Enhanced Gauge
         gaugeWidget = CustomSpeedometerGauge(speed: _speed);
         break;
-      
+      case 4: // Enhanced Gauge
+        gaugeWidget = Container(
+          height: 300,
+          child: SfRadialGauge(
+            axes: <RadialAxis>[
+              RadialAxis(
+                pointers: <GaugePointer>[
+                  NeedlePointer(
+                    value: _speed,
+                    lengthUnit: GaugeSizeUnit.factor,
+                    needleLength: 0.8,
+                    needleEndWidth: 11,
+                    tailStyle: TailStyle(
+                      length: 0.2,
+                      width: 11,
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color(0xFFFF6B78),
+                          Color(0xFFFF6B78),
+                          Color(0xFFE20A22),
+                          Color(0xFFE20A22),
+                        ],
+                        stops: <double>[0, 0.5, 0.5, 1],
+                      ),
+                    ),
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color(0xFFFF6B78),
+                        Color(0xFFFF6B78),
+                        Color(0xFFE20A22),
+                        Color(0xFFE20A22),
+                      ],
+                      stops: <double>[0, 0.5, 0.5, 1],
+                    ),
+                    needleColor: Color(0xFFF67280),
+                    knobStyle: KnobStyle(
+                      knobRadius: 0.08,
+                      sizeUnit: GaugeSizeUnit.factor,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+        break;
+
       default:
         gaugeWidget = SfRadialGauge(
           axes: <RadialAxis>[
@@ -201,10 +234,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
                 GaugeAnnotation(
                   widget: Text(
                     '${_speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   angle: 90,
                   positionFactor: 0.5,
@@ -214,104 +244,132 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
           ],
         );
     }
-    
+
     // Apply rotation if not zero
     if (_gaugeRotation != 0.0) {
-      return Transform.rotate(
-        angle: _gaugeRotation,
-        child: gaugeWidget,
-      );
+      return Transform.rotate(angle: _gaugeRotation, child: gaugeWidget);
     }
-    
+
     return gaugeWidget;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Speedometer'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GaugeSelectionScreen(),
-                ),
-              );
-              if (result != null) {
-                setState(() {
-                  _selectedGaugeType = result['gaugeIndex'];
-                  _gaugeRotation = result['rotation'];
-                });
-                await _saveGaugePreference(_selectedGaugeType, _gaugeRotation);
-              }
-            },
-            icon: Icon(Icons.tune),
-            tooltip: 'Select Gauge Style',
-          ),
-
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RotatedGaugeFullscreenPage(
-                    speed: _speed,
-                    gaugeType: _selectedGaugeType,
-                    rotation: _gaugeRotation,
-                    distance: _distance,
-                  ),
-                ),
-              );
-            },
-            icon: Icon(Icons.rotate_right),
-            tooltip: 'Fullscreen Rotated Gauge',
-          ),
-        ],
-      ),
+      backgroundColor: Colors.transparent,
+      // appBar: AppBar(
+      //   title: Text('Speedometer'),
+      //   backgroundColor: Colors.blue,
+      //   foregroundColor: Colors.white,
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () async {
+      //         final result = await Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => GaugeSelectionScreen(),
+      //           ),
+      //         );
+      //         if (result != null) {
+      //           setState(() {
+      //             _selectedGaugeType = result['gaugeIndex'];
+      //             _gaugeRotation = result['rotation'];
+      //           });
+      //           await _saveGaugePreference(_selectedGaugeType, _gaugeRotation);
+      //         }
+      //       },
+      //       icon: Icon(Icons.tune),
+      //       tooltip: 'Select Gauge Style',
+      //     ),
+      //
+      //     IconButton(
+      //       onPressed: () {
+      //         Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => RotatedGaugeFullscreenPage(
+      //               speed: _speed,
+      //               gaugeType: _selectedGaugeType,
+      //               rotation: _gaugeRotation,
+      //               distance: _distance,
+      //             ),
+      //           ),
+      //         );
+      //       },
+      //       icon: Icon(Icons.rotate_right),
+      //       tooltip: 'Fullscreen Rotated Gauge',
+      //     ),
+      //   ],
+      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Center(
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(14.0),
               child: Container(
-                height: 350,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xff141414),
+                  border: Border.all(
+                    color: Color(0xff68DAE4), // Border color
+                    width: 2.0,
+                  ),
+                ),
+                height: 250,
                 child: _buildGauge(),
               ),
             ),
             SizedBox(height: 10),
-
-            Column(
-              children: [
-                StatRow(
-                  title1: 'Distance',
-                  value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
-                  title2: 'Top Speed',
-                  value2:
-                      '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Container(
+                height: 600,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xff141414),
+                  border: Border.all(
+                    color: Color(0xff68DAE4), // Border color
+                    width: 2.0,
+                  ),
                 ),
-                StatRow(
-                  title1: 'Avg Speed',
-                  value1:
-                      '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
-                  title2: 'Duration',
-                  value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
+                child: Column(
+                  children: [
+                    Column(
+                      children: [
+                        TripStatsCard(duration:' ${formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
+                        // StatRow(
+                        //   title1: 'Distance',
+                        //   value1:
+                        //       '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
+                        //   title2: 'Top Speed',
+                        //   value2:
+                        //       '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                        // ),
+                        // StatRow(
+                        //   title1: 'Avg Speed',
+                        //   value1:
+                        //       '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                        //   title2: 'Duration',
+                        //   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
+                        // ),
+                      ],
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10,0,10,10),
+                      child: TrackingControls(
+                        onUpdate: () {
+                          setState(() {
+                            _distance = tracker.totalKm;
+                            _elapsedTime = tracker.elapsedTime;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-
-            SizedBox(height: 10),
-
-            TrackingControls(
-              onUpdate: () {
-                setState(() {
-                  _distance = tracker.totalKm;
-                  _elapsedTime = tracker.elapsedTime;
-                });
-              },
+              ),
             ),
           ],
         ),
@@ -335,10 +393,12 @@ class RotatedGaugeFullscreenPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<RotatedGaugeFullscreenPage> createState() => _RotatedGaugeFullscreenPageState();
+  State<RotatedGaugeFullscreenPage> createState() =>
+      _RotatedGaugeFullscreenPageState();
 }
 
-class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage> {
+class _RotatedGaugeFullscreenPageState
+    extends State<RotatedGaugeFullscreenPage> {
   double currentRotation = 0.0;
 
   @override
@@ -349,7 +409,7 @@ class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage>
 
   Widget _buildFullscreenGauge() {
     Widget gaugeWidget;
-    
+
     switch (widget.gaugeType) {
       case 0: // Default Gauge
         gaugeWidget = SfRadialGauge(
@@ -367,7 +427,11 @@ class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage>
                 GaugeAnnotation(
                   widget: Text(
                     '${widget.speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   angle: 90,
                   positionFactor: 0.5,
@@ -377,25 +441,25 @@ class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage>
           ],
         );
         break;
-      
+
       case 1: // Custom Gauge
         gaugeWidget = CustomPaint(
           size: Size(400, 400),
           painter: GaugePainter(widget.speed),
         );
         break;
-      
+
       case 2: // Digital Speedometer
         gaugeWidget = DigitalSpeedometer(
           speed: widget.speed,
           totalDistance: widget.distance,
         );
         break;
-      
+
       case 3: // Enhanced Gauge
         gaugeWidget = CustomSpeedometerGauge(speed: widget.speed);
         break;
-      
+
       default:
         gaugeWidget = SfRadialGauge(
           axes: <RadialAxis>[
@@ -407,7 +471,11 @@ class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage>
                 GaugeAnnotation(
                   widget: Text(
                     '${widget.speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   angle: 90,
                   positionFactor: 0.5,
@@ -417,11 +485,8 @@ class _RotatedGaugeFullscreenPageState extends State<RotatedGaugeFullscreenPage>
           ],
         );
     }
-    
-    return Transform.rotate(
-      angle: currentRotation,
-      child: gaugeWidget,
-    );
+
+    return Transform.rotate(angle: currentRotation, child: gaugeWidget);
   }
 
   @override
