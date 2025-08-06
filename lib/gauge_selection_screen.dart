@@ -1,6 +1,9 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speedo_meter/widgets/newmete2.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'gauge_meter.dart';
 import 'widgets/newguage.dart';
 import 'widgets/custom_gauge.dart';
 import 'widgets/digital_speedometer.dart';
@@ -13,6 +16,8 @@ class GaugeSelectionScreen extends StatefulWidget {
 class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
   int selectedGaugeIndex = 0;
   double demoSpeed = 30.0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   final List<Map<String, dynamic>> gaugeOptions = [
     {
@@ -51,10 +56,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
       'description': 'Custom painted gauge with gradient',
       'widget': (double speed) => Container(
         height: 300,
-        child: CustomPaint(
-          size: Size(300, 300),
-          painter: GaugePainter(speed),
-        ),
+        child: CustomPaint(size: Size(300, 300), painter: GaugePainter(speed)),
       ),
     },
     {
@@ -68,52 +70,55 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
     {
       'name': 'Enhanced Gauge',
       'description': 'Improved gauge with better styling',
-      'widget': (double speed)  => Container(
-        height: 300,
-        child: CustomSpeedometerGauge(speed: speed),
-      ),
-    },    {
+      'widget': (double speed) =>
+          Container(height: 300, child: CustomSpeedometerGauge(speed: speed)),
+    },
+    {
       'name': 'Enhanced Gauge',
       'description': 'Improved gauge with better styling',
       'widget': (double speed) => Container(
         height: 300,
         child: SfRadialGauge(
-            axes: <RadialAxis>[
-              RadialAxis(
-                  pointers: <GaugePointer>[
-                    NeedlePointer(
-                        value: speed,
-                        lengthUnit: GaugeSizeUnit.factor,
-                        needleLength: 0.8,
-                        needleEndWidth: 11,
-                        tailStyle: TailStyle(
-                          length: 0.2,
-                          width: 11,
-                          gradient: LinearGradient(
-                              colors: <Color>[
-                                Color(0xFFFF6B78), Color(0xFFFF6B78),
-                                Color(0xFFE20A22), Color(0xFFE20A22)
-                              ],
-                              stops: <double>[0, 0.5, 0.5, 1]
-                          ),
-                        ),
-                        gradient: LinearGradient(
-                            colors: <Color>[
-                              Color(0xFFFF6B78), Color(0xFFFF6B78),
-                              Color(0xFFE20A22), Color(0xFFE20A22)
-                            ],
-                            stops: <double>[0, 0.5, 0.5, 1]
-                        ),
-                        needleColor: Color(0xFFF67280),
-                        knobStyle: KnobStyle(
-                            knobRadius: 0.08,
-                            sizeUnit: GaugeSizeUnit.factor,
-                            color: Colors.black
-                        )
+          axes: <RadialAxis>[
+            RadialAxis(
+              pointers: <GaugePointer>[
+                NeedlePointer(
+                  value: speed,
+                  lengthUnit: GaugeSizeUnit.factor,
+                  needleLength: 0.8,
+                  needleEndWidth: 11,
+                  tailStyle: TailStyle(
+                    length: 0.2,
+                    width: 11,
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color(0xFFFF6B78),
+                        Color(0xFFFF6B78),
+                        Color(0xFFE20A22),
+                        Color(0xFFE20A22),
+                      ],
+                      stops: <double>[0, 0.5, 0.5, 1],
                     ),
-                  ]
-              ),
-            ]
+                  ),
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      Color(0xFFFF6B78),
+                      Color(0xFFFF6B78),
+                      Color(0xFFE20A22),
+                      Color(0xFFE20A22),
+                    ],
+                    stops: <double>[0, 0.5, 0.5, 1],
+                  ),
+                  needleColor: Color(0xFFF67280),
+                  knobStyle: KnobStyle(
+                    knobRadius: 0.08,
+                    sizeUnit: GaugeSizeUnit.factor,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     },
@@ -169,61 +174,93 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
               ),
             ),
           ),
+          Expanded(
+            child: CarouselSlider(
+              items: gaugeOptions.map((i) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(color: Colors.amber),
+                      child: i['widget'](demoSpeed)
+                      ,
+                    );
+                  },
+                );
+              }).toList(),
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                height: 320,
+                enlargeCenterPage: true,
+                enableInfiniteScroll: false,
+                onPageChanged: (index, reason) {
+                  setState(() => selectedGaugeIndex = index);
+                },
+              ),
+            ),
+          ),
 
           SizedBox(height: 20),
 
           // Gauge selection
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              itemCount: gaugeOptions.length,
-              itemBuilder: (context, index) {
-                final gauge = gaugeOptions[index];
-                final isSelected = selectedGaugeIndex == index;
-
-                return Card(
-                  margin: EdgeInsets.only(bottom: 12),
-                  elevation: isSelected ? 8 : 2,
-                  color: isSelected ? Colors.blue.shade50 : Colors.white,
-                  child: ListTile(
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.speed,
-                        color: isSelected ? Colors.white : Colors.grey.shade600,
-                      ),
-                    ),
-                    title: Text(
-                      gauge['name'],
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected ? Colors.blue.shade800 : Colors.black87,
-                      ),
-                    ),
-                    subtitle: Text(
-                      gauge['description'],
-                      style: TextStyle(
-                        color: isSelected ? Colors.blue.shade600 : Colors.grey.shade600,
-                      ),
-                    ),
-                    trailing: isSelected
-                      ? Icon(Icons.check_circle, color: Colors.blue, size: 24)
-                      : null,
-                    onTap: () {
-                      setState(() {
-                        selectedGaugeIndex = index;
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
+          // Expanded(
+          //   child: ListView.builder(
+          //     padding: EdgeInsets.symmetric(horizontal: 16),
+          //     itemCount: gaugeOptions.length,
+          //     itemBuilder: (context, index) {
+          //       final gauge = gaugeOptions[index];
+          //       final isSelected = selectedGaugeIndex == index;
+          //
+          //       return Card(
+          //         margin: EdgeInsets.only(bottom: 12),
+          //         elevation: isSelected ? 8 : 2,
+          //         color: isSelected ? Colors.blue.shade50 : Colors.white,
+          //         child: ListTile(
+          //           leading: Container(
+          //             width: 50,
+          //             height: 50,
+          //             decoration: BoxDecoration(
+          //               color: isSelected ? Colors.blue : Colors.grey.shade200,
+          //               borderRadius: BorderRadius.circular(8),
+          //             ),
+          //             child: Icon(
+          //               Icons.speed,
+          //               color: isSelected ? Colors.white : Colors.grey.shade600,
+          //             ),
+          //           ),
+          //           title: Text(
+          //             gauge['name'],
+          //             style: TextStyle(
+          //               fontWeight: isSelected
+          //                   ? FontWeight.bold
+          //                   : FontWeight.normal,
+          //               color: isSelected
+          //                   ? Colors.blue.shade800
+          //                   : Colors.black87,
+          //             ),
+          //           ),
+          //           subtitle: Text(
+          //             gauge['description'],
+          //             style: TextStyle(
+          //               color: isSelected
+          //                   ? Colors.blue.shade600
+          //                   : Colors.grey.shade600,
+          //             ),
+          //           ),
+          //           trailing: isSelected
+          //               ? Icon(Icons.check_circle, color: Colors.blue, size: 24)
+          //               : null,
+          //           onTap: () {
+          //             setState(() {
+          //               selectedGaugeIndex = index;
+          //             });
+          //           },
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
 
           // Apply button
           Container(
@@ -232,9 +269,13 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, selectedGaugeIndex);
-                      Navigator.push(context, MaterialPageRoute(builder: (_)=>SpeedometerScreen2()));
+                    onPressed: () async{
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setInt('selectedGaugeIndex', selectedGaugeIndex);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SpeedometerScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -246,7 +287,10 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
                     ),
                     child: Text(
                       'Apply Gauge Style',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -257,47 +301,53 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
       ),
     );
   }
-} @override
+}
+
+@override
 Widget build(BuildContext context) {
   return Scaffold(
     body: Center(
       child: SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-                pointers: <GaugePointer>[
-                  NeedlePointer(
-                      value: 65,
-                      lengthUnit: GaugeSizeUnit.factor,
-                      needleLength: 0.8,
-                      needleEndWidth: 11,
-                      tailStyle: TailStyle(
-                        length: 0.2,
-                        width: 11,
-                        gradient: LinearGradient(
-                            colors: <Color>[
-                              Color(0xFFFF6B78), Color(0xFFFF6B78),
-                              Color(0xFFE20A22), Color(0xFFE20A22)
-                            ],
-                            stops: <double>[0, 0.5, 0.5, 1]
-                        ),
-                      ),
-                      gradient: LinearGradient(
-                          colors: <Color>[
-                            Color(0xFFFF6B78), Color(0xFFFF6B78),
-                            Color(0xFFE20A22), Color(0xFFE20A22)
-                          ],
-                          stops: <double>[0, 0.5, 0.5, 1]
-                      ),
-                      needleColor: Color(0xFFF67280),
-                      knobStyle: KnobStyle(
-                          knobRadius: 0.08,
-                          sizeUnit: GaugeSizeUnit.factor,
-                          color: Colors.black
-                      )
+        axes: <RadialAxis>[
+          RadialAxis(
+            pointers: <GaugePointer>[
+              NeedlePointer(
+                value: 65,
+                lengthUnit: GaugeSizeUnit.factor,
+                needleLength: 0.8,
+                needleEndWidth: 11,
+                tailStyle: TailStyle(
+                  length: 0.2,
+                  width: 11,
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      Color(0xFFFF6B78),
+                      Color(0xFFFF6B78),
+                      Color(0xFFE20A22),
+                      Color(0xFFE20A22),
+                    ],
+                    stops: <double>[0, 0.5, 0.5, 1],
                   ),
-                ]
-            ),
-          ]
+                ),
+                gradient: LinearGradient(
+                  colors: <Color>[
+                    Color(0xFFFF6B78),
+                    Color(0xFFFF6B78),
+                    Color(0xFFE20A22),
+                    Color(0xFFE20A22),
+                  ],
+                  stops: <double>[0, 0.5, 0.5, 1],
+                ),
+                needleColor: Color(0xFFF67280),
+                knobStyle: KnobStyle(
+                  knobRadius: 0.08,
+                  sizeUnit: GaugeSizeUnit.factor,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     ),
   );
