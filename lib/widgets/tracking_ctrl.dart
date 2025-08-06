@@ -5,6 +5,7 @@
 
   import '../Model/tracking_history.dart';
   import '../distance_tracking.dart';
+import '../main.dart';
 
   class TrackingControls extends StatefulWidget {
     final VoidCallback? onUpdate;
@@ -53,15 +54,15 @@
           Wrap(
             spacing: 1,
             children: [
-              ElevatedButton(
-                onPressed: tracker.isTracking
+              startButton(
+                onStart: tracker.isTracking
                     ? null
                     : () {
-                        tracker.startTracking();
-                        setState(() {});
-                      },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                child: const Text('Start'),
+                  tracker.startTracking();
+                  setState(() {});
+                },
+
+
               ),
               ElevatedButton(
                 onPressed: !tracker.isTracking
