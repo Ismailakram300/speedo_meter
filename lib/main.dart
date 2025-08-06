@@ -68,7 +68,7 @@ class TripStatsCard extends StatelessWidget {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(24),
-        width: 320,
+        width: double.infinity,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
