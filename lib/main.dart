@@ -1,91 +1,209 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:speedo_meter/settings.dart';
-import 'package:speedo_meter/widgets/newmete2.dart';
-import 'package:speedo_meter/widgets/painter.dart';
-import 'Services/current_location_map.dart';
-import 'digital_meter.dart';
-import 'gauge_meter.dart';
-import 'gauge_selection_screen.dart';
-void main() => runApp(SpeedometerApp());
 
-class SpeedometerApp extends StatelessWidget {
+import 'botom_nav_bar.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xff68DAE4),));
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Speedometer',
-      theme: ThemeData.dark(),
-      home: TabScreen(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-class TabScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-
-
-    return DefaultTabController(
-      length: 4, // Number of tabs
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Speedo Meter',style: TextStyle(color: Colors.white),),
-          actions: [
-
-            IconButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
-            }, icon: Icon(Icons.settings)),
-
-            // IconButton(onPressed: (){
-            //   Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomSpeedometerGauge(speed: 90,)));
-            // }, icon: Icon(Icons.settings)),
-
-
-
-
-    ],
-          bottom: TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.speed),text: "Digital",),
-              Tab(icon: Icon(Icons.shutter_speed),text: 'Gauge',),
-              Tab(icon: Icon(Icons.map),text: 'Map',),
-              Tab(icon: Icon(Icons.label),text: 'Map',),
-
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            Center(child: DigitalSpeedScreen()),
-            Center(child: SpeedometerScreen()),
-            Center(child: CurrentLocationMap()),
-            Center(child: GaugeSelectionScreen()),
-                        // Center(
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => SingleCity(
-            //             cityData: {
-            //               'name': 'Lahore',
-            //               'address': 'Lahore, Punjab, Pakistan',
-            //               'lat': 31.5497,
-            //               'lng': 74.3436,
-            //             },
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //     child: Text('Show Lahore on Map'),
-            //   ),
-            // ),
-          ],
-        ),
-
+      title: 'Speedometer App',
+      home: GradientBackground(
+        child: const BottomNavigationBarItemScreen(),
       ),
     );
   }
 }
 
+
+class GradientBackground extends StatelessWidget {
+  final Widget child;
+
+  const GradientBackground({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF033438), Color(0xFF081214)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+
+class TripStatsCard extends StatelessWidget {
+  final String duration;
+  final String distance;
+  final String avgSpeed;
+  final String topSpeed;
+
+  const TripStatsCard({
+    Key? key,
+    required this.duration,
+    required this.distance,
+    required this.avgSpeed,
+    required this.topSpeed,
+
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        width: 320,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                _StatColumn(
+                  label: 'Duration',
+                  value: duration,
+                  unit: '',
+                ),
+                _VerticalDivider(),
+                _StatColumn(
+                  label: 'Distance',
+                  value: distance,
+                  unit: 'km',
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _StatColumn(
+                  label: 'Avg Speed',
+                  value: avgSpeed,
+                  unit: 'km/h',
+                ),
+                _VerticalDivider(),
+                _StatColumn(
+                  label: 'Top Speed',
+                  value: topSpeed,
+                  unit: 'km/h',
+                ),
+              ],
+            ),
+            const SizedBox(height:14),
+
+
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatColumn extends StatelessWidget {
+  final String label;
+  final String value;
+  final String unit;
+
+  const _StatColumn({
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          const SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Color(0xFF68DAE4),
+                  fontSize: 12,
+                  fontFamily: 'Digital', // Use your digital font here
+                  letterSpacing: 2,
+                ),
+              ),
+              if (unit.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 4),
+                  child: Text(
+                    unit,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 48,
+      color: Colors.white24,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+    );
+  }
+}
+
+class startButton extends StatelessWidget {
+  final VoidCallback? onStart;
+  const startButton({super.key, required this.onStart,   });
+
+  @override
+  Widget build(BuildContext context) {
+    return  SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onStart,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xFF68DAE4),
+          foregroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Start Trip'),
+            SizedBox(width: 8),
+            Icon(Icons.play_arrow),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
