@@ -50,7 +50,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
   Future<void> _loadGaugePreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedGaugeType = prefs.getInt('selectedGaugeType') ?? 0;
+      _selectedGaugeType = prefs.getInt('selectedGaugeIndex') ?? 0;
     });
   }
 
