@@ -324,7 +324,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
             Padding(
               padding: const EdgeInsets.all(14),
               child: Container(
-                height: 600,
+                height: 300,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Color(0xff141414),
