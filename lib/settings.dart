@@ -869,256 +869,261 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget build(BuildContext context) {
-    final Uri _url = Uri.parse('https://flutter.dev');
-    return Scaffold(
-      //backgroundColor: Color(0xffEFF7FF),
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => HistoryScreen()),
-              );
-            },
-            icon: Icon(Icons.ice_skating),
-          ),
-        ],
-        title: Text('Settings'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(9.0),
-        children: [
-          _buildSectionTitle("General"),
-          SizedBox(
-            height: 60, // ⬅️ Adjust height if needed
-            child: Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
-                ), // ✅ Border
-              ),
-              //   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // ⬅️ Outer spacing
-              //color: Color(0xffFFFFFF),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  0,0,0,0
-                ), // ⬅️ Inner padding
-                child: ListTile(
-                  contentPadding: EdgeInsets.fromLTRB(
-                    10,
-                    0,
-                    0,
-                    0,
-                  ), // Remove default ListTile padding
-                  title: Padding(
-                    padding: const EdgeInsets.fromLTRB(5,5, 5,15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Speed Limit Alert",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+    //final Uri _url = Uri.parse('https://flutter.dev');
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => HistoryScreen()),
+                );
+              },
+              icon: Icon(Icons.ice_skating),
+            ),
+          ],
+          title: Text('Settings'),
+        ),
+       // extendBodyBehindAppBar: false,
+        //backgroundColor: Color(0xffEFF7FF),
+      
+        body: ListView(
+          padding: const EdgeInsets.all(9.0),
+          children: [
+            _buildSectionTitle("General"),
+            SizedBox(
+              height: 60, // ⬅️ Adjust height if needed
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ), // ✅ Border
+                ),
+                //   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // ⬅️ Outer spacing
+                //color: Color(0xffFFFFFF),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    0,0,0,0
+                  ), // ⬅️ Inner padding
+                  child: ListTile(
+                    contentPadding: EdgeInsets.fromLTRB(
+                      10,
+                      0,
+                      0,
+                      0,
+                    ), // Remove default ListTile padding
+                    title: Padding(
+                      padding: const EdgeInsets.fromLTRB(5,5, 5,15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Speed Limit Alert",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Mulish',
+                            ),
                           ),
-                        ),
-                        Transform.scale(
-                          scale: 0.7,
-                        child:   Switch(
-activeColor: Colors.amber,
-                            value: _isSpeedAlertEnabled,
-                            onChanged: (value) async {
-                              setState(() {
-                                _isSpeedAlertEnabled = value;
-                              });
-                              setSpeedAlertEnabled(value);
-                            },
+                          Transform.scale(
+                            scale: 0.7,
+                          child:   Switch(
+      activeColor: Colors.amber,
+                              value: _isSpeedAlertEnabled,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _isSpeedAlertEnabled = value;
+                                });
+                                setSpeedAlertEnabled(value);
+                              },
+                            ),
                           ),
-                        ),
-
-                      ],
+      
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-
-          _buildSettingsTile(
-            "Speed Limit",
-            " $_speedLimit km/h",
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text("Set Speed Limit"),
-                    content: DropdownButton<double>(
-                      value: _speedLimit.toDouble(),
-                      icon: Icon(Icons.arrow_drop_down),
-                      isExpanded: true,
-                      onChanged: (double? newValue) async {
-                        if (newValue != null) {
-                          setState(() {
-                            selectedValue = newValue;
-                          });
-                          await DatabaseHelper().updateSpeedLimit(newValue);
-                          await _loadSpeedLimit();
-                          Navigator.of(context).pop(); // close dialog
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Speed limit updated to $newValue'),
-                            ),
+      
+            _buildSettingsTile(
+              "Speed Limit",
+              " $_speedLimit km/h",
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Set Speed Limit"),
+                      content: DropdownButton<double>(
+                        value: _speedLimit.toDouble(),
+                        icon: Icon(Icons.arrow_drop_down),
+                        isExpanded: true,
+                        onChanged: (double? newValue) async {
+                          if (newValue != null) {
+                            setState(() {
+                              selectedValue = newValue;
+                            });
+                            await DatabaseHelper().updateSpeedLimit(newValue);
+                            await _loadSpeedLimit();
+                            Navigator.of(context).pop(); // close dialog
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Speed limit updated to $newValue'),
+                              ),
+                            );
+                          }
+                        },
+                        items: speedOptions.map<DropdownMenuItem<double>>((
+                          double value,
+                        ) {
+                          return DropdownMenuItem<double>(
+                            value: value,
+                            child: Text("${value.toStringAsFixed(0)} km/h"),
                           );
-                        }
-                      },
-                      items: speedOptions.map<DropdownMenuItem<double>>((
-                        double value,
-                      ) {
-                        return DropdownMenuItem<double>(
-                          value: value,
-                          child: Text("${value.toStringAsFixed(0)} km/h"),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-
-          _buildSettingsTile(
-            "History",
-            "",
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => HistoryScreen()),
+                        }).toList(),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-          ),
-
-          SizedBox(height: 10),
-
-          SizedBox(height: 10),
-          _buildSectionTitle("Other"),
-          _buildSettingsTile(
-            "Rate Us",
-            "",
-            onTap: () {
-              showRateUsDialog(context);
-            },
-          ),
-          _buildSettingsTile("Privacy Policy","", onTap: (){
-            Navigator.push(context,MaterialPageRoute(builder: (_)=>GaugeSelectionScreen()));
-          }),
-          _buildSettingsTile(
-            "Share",
-            "",
-            onTap: () async {
-              final params = ShareParams(
-                text:
-                    'Check out my app: https://play.google.com/store/apps/details?id=com.yourcompany.app',
-                subject: 'Awesome Flutter App',
-              );
-              final result = await SharePlus.instance.share(params);
-
-              if (result.status == ShareResultStatus.success) {
-                print('Thank you for sharing my website!');
-              }
-            },
-          ),
-          _buildSettingsTile(
-            "Exit",
-            "",
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return StatefulBuilder(
-                    builder: (context, setDialogState) {
-                      return AlertDialog(
-                        backgroundColor: Colors.white,
-                        title: Center(
-                          child: Text(
-                            "Exit",
-                            style: TextStyle(
-                              fontFamily: 'Mulish',
-                              fontWeight: FontWeight.bold,
+      
+            _buildSettingsTile(
+              "History",
+              "",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => HistoryScreen()),
+              ),
+            ),
+      
+            SizedBox(height: 10),
+      
+            SizedBox(height: 10),
+            _buildSectionTitle("Other"),
+            _buildSettingsTile(
+              "Rate Us",
+              "",
+              onTap: () {
+                showRateUsDialog(context);
+              },
+            ),
+            _buildSettingsTile("Privacy Policy","", onTap: (){
+              Navigator.push(context,MaterialPageRoute(builder: (_)=>GaugeSelectionScreen()));
+            }),
+            _buildSettingsTile(
+              "Share",
+              "",
+              onTap: () async {
+                final params = ShareParams(
+                  text:
+                      'Check out my app: https://play.google.com/store/apps/details?id=com.yourcompany.app',
+                  subject: 'Awesome Flutter App',
+                );
+                final result = await SharePlus.instance.share(params);
+      
+                if (result.status == ShareResultStatus.success) {
+                  print('Thank you for sharing my website!');
+                }
+              },
+            ),
+            _buildSettingsTile(
+              "Exit",
+              "",
+              onTap: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return StatefulBuilder(
+                      builder: (context, setDialogState) {
+                        return AlertDialog(
+                          backgroundColor: Colors.white,
+                          title: Center(
+                            child: Text(
+                              "Exit",
+                              style: TextStyle(
+                                fontFamily: 'Mulish',
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Center(
-                              child: Text(
-                                "Are you sure you want to exit?",
-                                style: TextStyle(
-                                  fontFamily: 'Mulish',
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        actions: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.blue),
-                                    //  color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-
-                                  height: 40,
-                                  width: 70,
-                                  child: Center(
-                                    child: Text(
-                                      "CANCEL",
-                                      style: TextStyle(
-                                        color: Color(0xff7A7A7A),
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Mulish',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  SystemNavigator.pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
+                              Center(
                                 child: Text(
-                                  "Exit",
-                                  style: TextStyle(color: Colors.white),
+                                  "Are you sure you want to exit?",
+                                  style: TextStyle(
+                                    fontFamily: 'Mulish',
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
-        ],
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      //  color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+      
+                                    height: 40,
+                                    width: 70,
+                                    child: Center(
+                                      child: Text(
+                                        "CANCEL",
+                                        style: TextStyle(
+                                          color: Color(0xff7A7A7A),
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Mulish',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    SystemNavigator.pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Exit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
