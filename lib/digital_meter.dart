@@ -7,6 +7,7 @@ import 'package:speedo_meter/widgets/tracking_ctrl.dart';
 import 'Database/database_helper.dart';
 import 'Services/SpeedAlertHelper.dart';
 import 'distance_tracking.dart';
+import 'main.dart';
 import 'meter_with_timer.dart';
 
 class DigitalSpeedScreen extends StatefulWidget {
@@ -33,16 +34,17 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     _loadSpeedLimit();
     tracker.onSpeedChanged = _handleSpeedChange;
     // Manually simulate high speed to test alert
-    // Future.delayed(Duration(seconds: 2), () {
-    //   _handleSpeedChange(
-    //     250,
-    //   ); // This should trigger the alert if speedLimit < 250
-    // });
+    Future.delayed(Duration(seconds: 2), () {
+      _handleSpeedChange(
+        950,
+      ); // This should trigger the alert if speedLimit < 250
+    });
   }
   Future<void> _loadSpeedLimit() async {
     final dbLimit = await DatabaseHelper().getSpeedLimit();
     setState(() {
       _speedLimit = dbLimit.toInt();
+      print(_speedLimit);
     });
   }
 
@@ -108,62 +110,117 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     final tracker = DistanceTracker();
 
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FullScreenDigitalMeter(speed: _speed),
+
+      backgroundColor: Colors.transparent,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 10),
+
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xff141414),
+                  border: Border.all(
+                    color: Color(0xff68DAE4), // Border color
+                    width: 2.0,
+                  ),
                 ),
-              );
-            },
-            icon: Icon(Icons.crop_rotate),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: Text(
-              '${_speed.toStringAsFixed(1)} km/h',
-              style: TextStyle(
-                fontSize: 60,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                height: 300,
+                child:   Center(
+                  child: Text(
+                    '${_speed.toStringAsFixed(1)} km/h',
+                    style: TextStyle(
+                      fontSize: 60,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          Column(
-            children: [
-              StatRow(
-                title1: 'Distance',
-                value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
-                title2: 'Top Speed',
-                value2: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+            //SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Container(
+                height: 270,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xff141414),
+                  border: Border.all(
+                    color: Color(0xff68DAE4), // Border color
+                    width: 2.0,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Column(
+                      children: [
+                        TripStatsCard(duration:' ${_formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
+                        // StatRow(
+                        //   title1: 'Distance',
+                        //   value1:
+                        //       '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
+                        //   title2: 'Top Speed',
+                        //   value2:
+                        //       '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                        // ),
+                        // StatRow(
+                        //   title1: 'Avg Speed',
+                        //   value1:
+                        //       '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                        //   title2: 'Duration',
+                        //   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
+                        // ),
+                      ],
+                    ),
+        
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10,0,10,10),
+                      child: TrackingControls(
+                        onUpdate: () {
+                          setState(() {
+                            _distance = tracker.totalKm;
+                            _elapsedTime = tracker.elapsedTime;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              StatRow(
-                title1: 'Avg Speed',
-                value1: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
-                title2: 'Duration',
-                value2: 'Time: ${_formatDuration(tracker.elapsedTime)}',
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          TrackingControls(
-            onUpdate: () {
-              setState(() {
-                _distance = tracker.totalKm;
-                _elapsedTime = tracker.elapsedTime;
-              });
-            },
-          ),
-        ],
+            ),
+            // SizedBox(height: 20),
+            // Column(
+            //   children: [
+            //     // StatRow(
+            //     //   title1: 'Distance',
+            //     //   value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
+            //     //   title2: 'Top Speed',
+            //     //   value2: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+            //     // ),
+            //     // StatRow(
+            //     //   title1: 'Avg Speed',
+            //     //   value1: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+            //     //   title2: 'Duration',
+            //     //   value2: 'Time: ${_formatDuration(tracker.elapsedTime)}',
+            //     // ),
+            //   ],
+            // ),
+            // SizedBox(height: 20),
+            // TrackingControls(
+            //   onUpdate: () {
+            //     setState(() {
+            //       _distance = tracker.totalKm;
+            //       _elapsedTime = tracker.elapsedTime;
+            //     });
+            //   },
+            // ),
+          ],
+        ),
       ),
     );
   }
