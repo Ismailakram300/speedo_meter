@@ -4,7 +4,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../distance_tracking.dart';
+import '../main.dart';
 import '../widgets/stat_row.dart';
+import '../widgets/tracking_ctrl.dart';
 
 class CurrentLocationMap extends StatefulWidget {
   const CurrentLocationMap({Key? key}) : super(key: key);
@@ -150,6 +152,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
   Widget build(BuildContext context) {
     final tracker = DistanceTracker();
     return Scaffold(
+      backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_currentPosition != null) {
@@ -166,32 +169,37 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
       body: SingleChildScrollView(
         child: Column(
           children: [
+            
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 25, 10, 10),
               child: Container(
                 width: double.infinity,
                 height: 300.0,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12.0),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xff141414),
                   border: Border.all(
-                    color: Colors.blue,
+                    color: Color(0xff68DAE4), // Border color
                     width: 2.0,
                   ),
                 ),
                 child: _currentPosition == null
                     ? const Center(child: CircularProgressIndicator())
-                    : GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      _currentPosition!.latitude,
-                      _currentPosition!.longitude,
+                    : ClipRRect(
+
+                  borderRadius: BorderRadius.circular(11),
+                      child: GoogleMap(
+                                        onMapCreated: _onMapCreated,
+                                        initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                      ),
+                      zoom: 14,
+                                        ),
+                                        markers: _markers.values.toSet(),
+                                      ),
                     ),
-                    zoom: 14,
-                  ),
-                  markers: _markers.values.toSet(),
-                ),
               ),
             ),
             Column(
@@ -203,9 +211,11 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                       width: double.infinity,
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: Color(0xff141414),
+
                         borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(color: Colors.blue.shade200),
+                        border: Border.all( color: Color(0xff68DAE4), // Border color
+                          width: 2.0,),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,28 +225,58 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                              color: Colors.white
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             _currentAddress!,
-                            style: const TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14,color: Colors.white),
                           ),
                         ],
                       ),
                     ),
                   ),
-                StatRow(
-                  title1: 'Distance',
-                  value1: '${tracker.totalKm.toStringAsFixed(2)} km',
-                  title2: 'Top Speed',
-                  value2: '${tracker.topSpeed.toStringAsFixed(1)} km/h',
-                ),
-                StatRow(
-                  title1: 'Avg Speed',
-                  value1: '${tracker.averageSpeed.toStringAsFixed(1)} km/h',
-                  title2: 'Duration',
-                  value2: 'Time: ${_formatDuration(tracker.elapsedTime)}',
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Color(0xff141414),
+                      border: Border.all(
+                        color: Color(0xff68DAE4), // Border color
+                        width: 2.0,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Column(
+                          children: [
+                            TripStatsCard(duration:' ${_formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
+                            // StatRow(
+                            //   title1: 'Distance',
+                            //   value1:
+                            //       '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
+                            //   title2: 'Top Speed',
+                            //   value2:
+                            //       '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
+                            // ),
+                            // StatRow(
+                            //   title1: 'Avg Speed',
+                            //   value1:
+                            //       '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
+                            //   title2: 'Duration',
+                            //   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
+                            // ),
+                          ],
+                        ),
+
+
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
