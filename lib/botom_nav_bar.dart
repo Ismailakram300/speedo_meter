@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:speedo_meter/gauge_selection_screen.dart';
+import 'package:speedo_meter/history.dart';
 import 'package:speedo_meter/settings.dart';
 
 import 'Services/current_location_map.dart';
@@ -42,9 +44,14 @@ class _BottomNavigationBarItemScreenState extends State<BottomNavigationBarItemS
                 Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
               },
             ), IconButton(
+              icon: Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => HistoryScreen()));
+              },
+            ), IconButton(
               icon: Icon(Icons.history_outlined, color: Colors.white),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => GaugeSelectionScreen()));
               },
             ),
           ],
@@ -54,6 +61,9 @@ class _BottomNavigationBarItemScreenState extends State<BottomNavigationBarItemS
           body: _screens[currentindex],
 
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Color(0xff141414),
+            selectedItemColor: Color(0xff68DAE4),
+            unselectedItemColor: Color(0xff869FA1),
             currentIndex: currentindex,
             onTap: (index) {
               setState(() {
