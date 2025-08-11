@@ -206,4 +206,32 @@ class startButton extends StatelessWidget {
     );
   }
 }
+class customButton extends StatelessWidget {
+  final VoidCallback? onStart;
+  String text;
+      final Color bgColor;
+   customButton({super.key, required this.onStart,   required this.text, required this.bgColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return  GestureDetector(
+      onTap: onStart,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
