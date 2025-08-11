@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:speedo_meter/history.dart';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 import 'Database/database_helper.dart';
 import 'gauge_selection_screen.dart';
+import 'permissions_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -14,7 +13,54 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  void showRateUsDialog(BuildContext context) {
+  int speedUnit = 0; // 0: Km/h, 1: Mph, 2: Knot
+  int maxSpeed = 340;
+  bool showSpeedInNotification = true;
+  bool speedLimitAlarm = false;
+  bool enableTrackingOnMap = true;
+  bool keepScreenOn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  bool _isSpeedAlertEnabled = true;
+  final String _alertPrefKey = "isSpeedAlertEnabled";
+
+  Future<void> setSpeedAlertEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isSpeedAlertEnabled', value);
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      speedUnit = prefs.getInt('speedUnit') ?? 0;
+      maxSpeed = prefs.getInt('maxSpeed') ?? 340;
+      showSpeedInNotification =
+          prefs.getBool('showSpeedInNotification') ?? true;
+      speedLimitAlarm = prefs.getBool('speedLimitAlarm') ?? false;
+      enableTrackingOnMap = prefs.getBool('enableTrackingOnMap') ?? true;
+      keepScreenOn = prefs.getBool('keepScreenOn') ?? true;
+    });
+  }
+
+  Future<void> _saveSetting(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is bool) {
+      await prefs.setBool(key, value);
+    }
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  void _showRateUsDialog() {
     int selectedRating = 1;
     showDialog(
       context: context,
@@ -27,9 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: SizedBox(
             height: 230,
             child: Column(
-              // mainAxisSize: MainAxisSize.min,
               children: [
-                // 👍 Icon in a bubble
                 Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
@@ -46,15 +90,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   "Enjoying the app? Let us know!",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Mulish',
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 16),
-
-                // ⭐ Star Rating
                 StatefulBuilder(
                   builder: (context, setState) {
                     return SingleChildScrollView(
@@ -82,26 +120,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
-
-                // Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        // handle rating logic here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "Thanks for rating us $selectedRating stars!",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                fontFamily: 'Mulish',
-                              ),
-                            ),
-                          ),
+                        _showSnack(
+                          "Thanks for rating us $selectedRating stars!",
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -122,10 +148,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.blue),
-                          //  color: Colors.blue,
                           borderRadius: BorderRadius.circular(10),
                         ),
-
                         height: 40,
                         width: 70,
                         child: Center(
@@ -134,7 +158,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             style: TextStyle(
                               color: Color(0xff7A7A7A),
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
                             ),
                           ),
                         ),
@@ -150,717 +173,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // Future<bool> showDailyGoalDialog(
-  //     BuildContext context,
-  //     int initialValue,
-  //     ) async {
-  //   int currentValue = initialValue;
-  //   bool isSaved = false;
-  //   await showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: Color(0xffE4E4E4),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         title: Text(
-  //           "Daily Goal",
-  //           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
-  //         ),
-  //         content: StatefulBuilder(
-  //           builder: (context, setState) {
-  //             return Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 NumberPicker(
-  //                   value: currentValue,
-  //                   minValue: 100,
-  //                   decoration: BoxDecoration(),
-  //                   maxValue: 10000,
-  //                   step: 50,
-  //                   haptics: true,
-  //                   onChanged: (value) => setState(() => currentValue = value),
-  //                   selectedTextStyle: TextStyle(
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.blue,
-  //                     fontSize: 28,
-  //                   ),
-  //                   textStyle: TextStyle(color: Colors.grey, fontSize: 20),
-  //                 ),
-  //                 Text(
-  //                   "ml",
-  //
-  //                   style: TextStyle(
-  //                     fontSize: 30,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Color(0xff278DE8),
-  //                   ),
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //         actions: [
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               InkWell(
-  //                 onTap: () async {
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(color: Colors.blue),
-  //                     //  color: Colors.blue,
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //
-  //                   height: 40,
-  //                   width: 70,
-  //                   child: Center(
-  //                     child: Text(
-  //                       "CANCEL",
-  //                       style: TextStyle(
-  //                         color: Color(0xff7A7A7A),
-  //                         fontWeight: FontWeight.bold,
-  //                         fontFamily: 'Mulish',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //
-  //               ElevatedButton(
-  //                 onPressed: () async {
-  //                   await DatabaseHelper.instance.updateDailyGoal(currentValue);
-  //                   await DatabaseHelper.instance.debugPrintAllUserData();
-  //                   Navigator.of(context).pop();
-  //                   isSaved = true;
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(
-  //                       content: Text("Daily goal set to $currentValue ml"),
-  //                     ),
-  //                   );
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                 ),
-  //                 child: Text("Save", style: TextStyle(color: Colors.white)),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  //   return isSaved;
-  // }
-  //
-  // void showWeightDialog(BuildContext context, int initialValue) {
-  //   int weightValue = initialValue;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         title: Text(
-  //           "Weight",
-  //           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
-  //         ),
-  //         content: StatefulBuilder(
-  //           builder: (context, setState) {
-  //             return Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               crossAxisAlignment: CrossAxisAlignment.center,
-  //               children: [
-  //                 NumberPicker(
-  //                   value: weightValue,
-  //                   minValue: 10,
-  //                   maxValue: 120,
-  //                   step: 1,
-  //                   haptics: true,
-  //                   onChanged: (value) => setState(() => weightValue = value),
-  //                   selectedTextStyle: TextStyle(
-  //                     color: Colors.blue,
-  //                     fontSize: 28,
-  //                   ),
-  //                   textStyle: TextStyle(color: Colors.grey, fontSize: 20),
-  //                 ),
-  //                 Text(
-  //                   "kg",
-  //                   style: TextStyle(
-  //                     fontSize: 26,
-  //                     color: Colors.blue,
-  //                     fontWeight: FontWeight.bold,
-  //                     fontFamily: 'Mulish',
-  //                   ),
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //         actions: [
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               InkWell(
-  //                 onTap: () async {
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(color: Colors.blue),
-  //                     //  color: Colors.blue,
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //
-  //                   height: 40,
-  //                   width: 70,
-  //                   child: Center(
-  //                     child: Text(
-  //                       "CANCEL",
-  //                       style: TextStyle(
-  //                         color: Color(0xff7A7A7A),
-  //                         fontWeight: FontWeight.bold,
-  //                         fontFamily: 'Mulish',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               ElevatedButton(
-  //                 onPressed: () async {
-  //                   await DatabaseHelper.instance.updateWeight(weightValue);
-  //                   await DatabaseHelper.instance.debugPrintAllUserData();
-  //                   Navigator.of(context).pop();
-  //
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(content: Text("Weight set to $weightValue Kl")),
-  //                   );
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                 ),
-  //                 child: Text("Save", style: TextStyle(color: Colors.white)),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // void showWakeUpTimeDialog(BuildContext context, TimeOfDay initialTime) {
-  //   int selectedHour = initialTime.hour;
-  //   int selectedMinute = initialTime.minute;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         title: Text(
-  //           "Wake Up Time",
-  //           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
-  //         ),
-  //         content: StatefulBuilder(
-  //           builder: (context, setState) {
-  //             return Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Text("Hour", style: TextStyle(color: Colors.grey)),
-  //                     NumberPicker(
-  //                       value: selectedHour,
-  //                       minValue: 0,
-  //                       maxValue: 23,
-  //                       zeroPad: true,
-  //                       onChanged: (value) =>
-  //                           setState(() => selectedHour = value),
-  //                       selectedTextStyle: TextStyle(
-  //                         color: Colors.blue,
-  //                         fontSize: 24,
-  //                       ),
-  //                       textStyle: TextStyle(color: Colors.grey, fontSize: 18),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 SizedBox(width: 16),
-  //                 Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Text("Minute", style: TextStyle(color: Colors.grey)),
-  //                     NumberPicker(
-  //                       value: selectedMinute,
-  //                       minValue: 0,
-  //                       maxValue: 59,
-  //                       zeroPad: true,
-  //                       onChanged: (value) =>
-  //                           setState(() => selectedMinute = value),
-  //                       selectedTextStyle: TextStyle(
-  //                         color: Colors.blue,
-  //                         fontSize: 24,
-  //                       ),
-  //                       textStyle: TextStyle(color: Colors.grey, fontSize: 18),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //         actions: [
-  //           Row(
-  //             crossAxisAlignment: CrossAxisAlignment.center,
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               InkWell(
-  //                 onTap: () {
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(color: Colors.blue),
-  //                     //  color: Colors.blue,
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //
-  //                   height: 40,
-  //                   width: 70,
-  //                   child: Center(
-  //                     child: Text(
-  //                       "CANCEL",
-  //                       style: TextStyle(
-  //                         color: Color(0xff7A7A7A),
-  //                         fontWeight: FontWeight.bold,
-  //                         fontFamily: 'Mulish',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               ElevatedButton(
-  //                 onPressed: () async {
-  //                   final newTime = TimeOfDay(
-  //                     hour: selectedHour,
-  //                     minute: selectedMinute,
-  //                   );
-  //                   final formatted =
-  //                       "${newTime.hour.toString().padLeft(2, '0')}:${newTime.minute.toString().padLeft(2, '0')}";
-  //
-  //                   await DatabaseHelper.instance.updateWakeUpTime(formatted);
-  //                   await DatabaseHelper.instance.debugPrintAllUserData();
-  //
-  //                   Navigator.of(context).pop();
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(
-  //                       content: Text(
-  //                         "Wake-up time set to ${newTime.format(context)}",
-  //                       ),
-  //                     ),
-  //                   );
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                 ),
-  //                 child: Text("Save", style: TextStyle(color: Colors.white)),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // void showsleepTimeDialog(BuildContext context, TimeOfDay initialTime) {
-  //   int selectedHour = initialTime.hour;
-  //   int selectedMinute = initialTime.minute;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         title: Text(
-  //           "sleepTime",
-  //           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
-  //         ),
-  //         content: StatefulBuilder(
-  //           builder: (context, setState) {
-  //             return Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Text("Hour", style: TextStyle(color: Colors.grey)),
-  //                     NumberPicker(
-  //                       value: selectedHour,
-  //                       minValue: 0,
-  //                       maxValue: 23,
-  //                       zeroPad: true,
-  //                       onChanged: (value) =>
-  //                           setState(() => selectedHour = value),
-  //                       selectedTextStyle: TextStyle(
-  //                         color: Colors.blue,
-  //                         fontSize: 24,
-  //                       ),
-  //                       textStyle: TextStyle(color: Colors.grey, fontSize: 18),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 SizedBox(width: 16),
-  //                 Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     Text("Minute", style: TextStyle(color: Colors.grey)),
-  //                     NumberPicker(
-  //                       value: selectedMinute,
-  //                       minValue: 0,
-  //                       maxValue: 59,
-  //                       zeroPad: true,
-  //                       onChanged: (value) =>
-  //                           setState(() => selectedMinute = value),
-  //                       selectedTextStyle: TextStyle(
-  //                         color: Colors.blue,
-  //                         fontSize: 24,
-  //                       ),
-  //                       textStyle: TextStyle(color: Colors.grey, fontSize: 18),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //         actions: [
-  //           Row(
-  //             crossAxisAlignment: CrossAxisAlignment.center,
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               InkWell(
-  //                 onTap: () {
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(color: Colors.blue),
-  //                     //  color: Colors.blue,
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //
-  //                   height: 40,
-  //                   width: 70,
-  //                   child: Center(
-  //                     child: Text(
-  //                       "CANCEL",
-  //                       style: TextStyle(
-  //                         color: Color(0xff7A7A7A),
-  //                         fontWeight: FontWeight.bold,
-  //                         fontFamily: 'Mulish',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               ElevatedButton(
-  //                 onPressed: () async {
-  //                   final newTime = TimeOfDay(
-  //                     hour: selectedHour,
-  //                     minute: selectedMinute,
-  //                   );
-  //                   final formatted =
-  //                       "${newTime.hour.toString().padLeft(2, '0')}:${newTime.minute.toString().padLeft(2, '0')}";
-  //
-  //                   await DatabaseHelper.instance.updateSleepTime(formatted);
-  //                   await DatabaseHelper.instance.debugPrintAllUserData();
-  //
-  //                   Navigator.of(context).pop();
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(
-  //                       content: Text(
-  //                         "sleepTime set to ${newTime.format(context)}",
-  //                       ),
-  //                     ),
-  //                   );
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                 ),
-  //                 child: Text("Save", style: TextStyle(color: Colors.white)),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // void showGenderDialog(BuildContext context, String initialGender) {
-  //   String selectedGender = initialGender;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         backgroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //         title: Text(
-  //           "Select Gender",
-  //           style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
-  //         ),
-  //         content: StatefulBuilder(
-  //           builder: (context, setState) {
-  //             return Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 RadioListTile<String>(
-  //                   activeColor: Colors.blue,
-  //                   title: Text("Male"),
-  //                   value: "Male",
-  //                   groupValue: selectedGender,
-  //                   onChanged: (value) =>
-  //                       setState(() => selectedGender = value!),
-  //                 ),
-  //                 RadioListTile<String>(
-  //                   title: Text("Female"),
-  //                   activeColor: Colors.blue,
-  //
-  //                   value: "Female",
-  //                   groupValue: selectedGender,
-  //                   onChanged: (value) =>
-  //                       setState(() => selectedGender = value!),
-  //                 ),
-  //                 RadioListTile<String>(
-  //                   title: Text("Other"),
-  //                   activeColor: Colors.blue,
-  //
-  //                   value: "Other",
-  //                   groupValue: selectedGender,
-  //                   onChanged: (value) =>
-  //                       setState(() => selectedGender = value!),
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //         actions: [
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //             children: [
-  //               InkWell(
-  //                 onTap: () async {
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     border: Border.all(color: Colors.blue),
-  //                     //  color: Colors.blue,
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //
-  //                   height: 40,
-  //                   width: 70,
-  //                   child: Center(
-  //                     child: Text(
-  //                       "CANCEL",
-  //                       style: TextStyle(
-  //                         color: Color(0xff7A7A7A),
-  //                         fontWeight: FontWeight.bold,
-  //                         fontFamily: 'Mulish',
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //
-  //               ElevatedButton(
-  //                 onPressed: () async {
-  //                   await DatabaseHelper.instance.updateGender(selectedGender);
-  //                   await DatabaseHelper.instance.debugPrintAllUserData();
-  //                   Navigator.of(context).pop();
-  //
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     SnackBar(content: Text("Gender set to $selectedGender")),
-  //                   );
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(12),
-  //                   ),
-  //                 ),
-  //                 child: Text("Save", style: TextStyle(color: Colors.white)),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-  //
-  // String selectedSound = "Chime";
-  //
-  // final AudioPlayer _player =
-  // AudioPlayer(); // declare once (globally or inside your class)
-  //
-  // void _showSoundPicker(BuildContext context) {
-  //   List<String> sounds = ["Chime", "Bell", "Beep", "Drop"];
-  //   String tempSelectedSound = selectedSound;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return StatefulBuilder(
-  //         builder: (context, setDialogState) {
-  //           return AlertDialog(
-  //             backgroundColor: Colors.white,
-  //             title: Text(
-  //               "Notification sound",
-  //               style: TextStyle(fontFamily: 'Mulish'),
-  //             ),
-  //             content: Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: sounds.map((sound) {
-  //                 return RadioListTile<String>(
-  //                   activeColor: Colors.blue,
-  //                   title: Text(sound),
-  //                   value: sound,
-  //                   groupValue: tempSelectedSound,
-  //                   onChanged: (value) async {
-  //                     setDialogState(() {
-  //                       tempSelectedSound = value!;
-  //                     });
-  //
-  //                     // Play the selected sound
-  //                     try {
-  //                       await _player
-  //                           .stop(); // stop if a previous sound is playing
-  //                       await _player.play(
-  //                         AssetSource('sounds/${value!.toLowerCase()}.mp3'),
-  //                       );
-  //                     } catch (e) {
-  //                       print('Error playing sound: $e');
-  //                     }
-  //                   },
-  //                 );
-  //               }).toList(),
-  //             ),
-  //             actions: [
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                 children: [
-  //                   TextButton(
-  //                     onPressed: () => Navigator.pop(context),
-  //                     child: Container(
-  //                       decoration: BoxDecoration(
-  //                         border: Border.all(color: Colors.blue),
-  //                         //  color: Colors.blue,
-  //                         borderRadius: BorderRadius.circular(10),
-  //                       ),
-  //
-  //                       height: 40,
-  //                       width: 70,
-  //                       child: Center(
-  //                         child: Text(
-  //                           "CANCEL",
-  //                           style: TextStyle(
-  //                             color: Color(0xff7A7A7A),
-  //                             fontWeight: FontWeight.bold,
-  //                             fontFamily: 'Mulish',
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   ElevatedButton(
-  //                     onPressed: () async {
-  //                       await _player.stop();
-  //                       Navigator.pop(
-  //                         context,
-  //                         tempSelectedSound,
-  //                       ); // return selected sound
-  //                     },
-  //                     style: ElevatedButton.styleFrom(
-  //                       backgroundColor: Colors.blue,
-  //                       shape: RoundedRectangleBorder(
-  //                         borderRadius: BorderRadius.circular(12),
-  //                       ),
-  //                     ),
-  //                     child: Text(
-  //                       "Save",
-  //                       style: TextStyle(color: Colors.white),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     },
-  //   ).then((selected) async {
-  //     if (selected != null) {
-  //       // ✅ update state of parent widget
-  //       setState(() {
-  //         selectedSound = selected;
-  //       });
-  //       SharedPreferences prefs = await SharedPreferences.getInstance();
-  //       prefs.setString('selectedSound', selected);
-  //     }
-  //   });
-  // }
-  TextEditingController speedController = TextEditingController();
-  bool _isSpeedAlertEnabled = true;
-  final String _alertPrefKey = "isSpeedAlertEnabled";
-
-  Future<void> setSpeedAlertEnabled(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isSpeedAlertEnabled', value);
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _loadSpeedLimit();
-  }
-
-  List<double> speedOptions = [100, 200, 300, 400];
-  double selectedValue = 100;
   int _speedLimit = 80;
+  void _openPrivacyPolicy() async {
+    const url = 'https://your-privacy-policy-url.com';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      _showSnack('Could not open Privacy Policy');
+    }
+  }
+
   Future<void> _loadSpeedLimit() async {
     final dbLimit = await DatabaseHelper().getSpeedLimit();
     setState(() {
@@ -868,340 +190,530 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Widget build(BuildContext context) {
-    //final Uri _url = Uri.parse('https://flutter.dev');
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => HistoryScreen()),
-                );
-              },
-              icon: Icon(Icons.ice_skating),
-            ),
-          ],
-          title: Text('Settings'),
-        ),
-       // extendBodyBehindAppBar: false,
-        //backgroundColor: Color(0xffEFF7FF),
-      
-        body: ListView(
-          padding: const EdgeInsets.all(9.0),
-          children: [
-            _buildSectionTitle("General"),
-            SizedBox(
-              height: 60, // ⬅️ Adjust height if needed
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: Colors.grey.shade300,
-                    width: 1,
-                  ), // ✅ Border
+  void _openFeedback() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'support@yourapp.com',
+      query: 'subject=App Feedback',
+    );
+    if (await canLaunch(emailLaunchUri.toString())) {
+      await launch(emailLaunchUri.toString());
+    } else {
+      _showSnack('Could not open email client');
+    }
+  }
+
+  void _shareApp() async {
+    await Share.share(
+      'Check out my app: https://play.google.com/store/apps/details?id=com.yourcompany.app',
+    );
+  }
+
+  void _confirmExit() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Center(
+            child: Text("Exit", style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(
+                  "Are you sure you want to exit?",
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                //   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // ⬅️ Outer spacing
-                //color: Color(0xffFFFFFF),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    0,0,0,0
-                  ), // ⬅️ Inner padding
-                  child: ListTile(
-                    contentPadding: EdgeInsets.fromLTRB(
-                      10,
-                      0,
-                      0,
-                      0,
-                    ), // Remove default ListTile padding
-                    title: Padding(
-                      padding: const EdgeInsets.fromLTRB(5,5, 5,15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Speed Limit Alert",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                          Transform.scale(
-                            scale: 0.7,
-                          child:   Switch(
-      activeColor: Colors.amber,
-                              value: _isSpeedAlertEnabled,
-                              onChanged: (value) async {
-                                setState(() {
-                                  _isSpeedAlertEnabled = value;
-                                });
-                                setSpeedAlertEnabled(value);
-                              },
-                            ),
-                          ),
-      
-                        ],
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    height: 40,
+                    width: 70,
+                    child: Center(
+                      child: Text(
+                        "CANCEL",
+                        style: TextStyle(
+                          color: Color(0xff7A7A7A),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-      
-            _buildSettingsTile(
-              "Speed Limit",
-              " $_speedLimit km/h",
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("Set Speed Limit"),
-                      content: DropdownButton<double>(
-                        value: _speedLimit.toDouble(),
-                        icon: Icon(Icons.arrow_drop_down),
-                        isExpanded: true,
-                        onChanged: (double? newValue) async {
-                          if (newValue != null) {
-                            setState(() {
-                              selectedValue = newValue;
-                            });
-                            await DatabaseHelper().updateSpeedLimit(newValue);
-                            await _loadSpeedLimit();
-                            Navigator.of(context).pop(); // close dialog
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Speed limit updated to $newValue'),
-                              ),
-                            );
-                          }
-                        },
-                        items: speedOptions.map<DropdownMenuItem<double>>((
-                          double value,
-                        ) {
-                          return DropdownMenuItem<double>(
-                            value: value,
-                            child: Text("${value.toStringAsFixed(0)} km/h"),
-                          );
-                        }).toList(),
-                      ),
-                    );
+                ElevatedButton(
+                  onPressed: () async {
+                    SystemNavigator.pop();
                   },
-                );
-              },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text("Exit", style: TextStyle(color: Colors.white)),
+                ),
+              ],
             ),
-      
-            _buildSettingsTile(
-              "History",
-              "",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => HistoryScreen()),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: GradientBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: Colors.white, // ← change to your desired color
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: true,
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.white),
+            //   onPressed: () => Navigator.pop(context),
+            // ),
+            title: Text(
+              'Settings',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+          body: Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF033438), Color(0xFF081214)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-      
-            SizedBox(height: 10),
-      
-            SizedBox(height: 10),
-            _buildSectionTitle("Other"),
-            _buildSettingsTile(
-              "Rate Us",
-              "",
-              onTap: () {
-                showRateUsDialog(context);
-              },
-            ),
-            _buildSettingsTile("Privacy Policy","", onTap: (){
-              Navigator.push(context,MaterialPageRoute(builder: (_)=>GaugeSelectionScreen()));
-            }),
-            _buildSettingsTile(
-              "Share",
-              "",
-              onTap: () async {
-                final params = ShareParams(
-                  text:
-                      'Check out my app: https://play.google.com/store/apps/details?id=com.yourcompany.app',
-                  subject: 'Awesome Flutter App',
-                );
-                final result = await SharePlus.instance.share(params);
-      
-                if (result.status == ShareResultStatus.success) {
-                  print('Thank you for sharing my website!');
-                }
-              },
-            ),
-            _buildSettingsTile(
-              "Exit",
-              "",
-              onTap: () async {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(
-                      builder: (context, setDialogState) {
-                        return AlertDialog(
-                          backgroundColor: Colors.white,
-                          title: Center(
-                            child: Text(
-                              "Exit",
-                              style: TextStyle(
-                                fontFamily: 'Mulish',
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
+            child: ListView(
+              children: [
+                // Permission Setting Card
+                _sectionCard(
+                  child: ListTile(
+                    title: Text(
+                      "Permission Setting",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Color(0xff68DAE4),
+                      size: 18,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => PermissionScreen()),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 16),
+                _sectionCard(
+                  child: ListTile(
+                    title: Text(
+                      "Theme ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Color(0xff68DAE4),
+                      size: 18,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => PermissionScreen()),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Speed Unit Card
+                _sectionCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Speed Unit",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _speedUnitButton("Km/H", 0),
+                          _speedUnitButton("Mph", 1),
+                          _speedUnitButton("Knot", 2),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  margin: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.tealAccent, width: 1.5),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Speed Warning",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+        
+                      // Max Speed Limit Expandable
+                      ExpansionTile(
+                        title: Text(
+                          "Max Speed Limit Warn",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          "$maxSpeed Km/h",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Center(
+                              IconButton(
+                                icon: Icon(Icons.remove, color: Colors.black),
+                                onPressed: () async {
+                                  setState(() {
+                                    if (maxSpeed > 0) maxSpeed--;
+                                  });
+                                  await DatabaseHelper().updateSpeedLimit(
+                                    maxSpeed.toDouble(),
+                                  );
+                                  await _loadSpeedLimit();
+                                  Navigator.of(context).pop(); // close dialog
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Speed limit updated to $maxSpeed',
+                                      ),
+                                    ),
+                                  );
+                                  _saveSetting('maxSpeed', maxSpeed);
+                                }, // handle minus
+                                color: Colors.cyan,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.cyan,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
                                 child: Text(
-                                  "Are you sure you want to exit?",
+                                  "$maxSpeed",
                                   style: TextStyle(
-                                    fontFamily: 'Mulish',
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add, color: Colors.black),
+                                onPressed: () async {
+                                  setState(() {
+                                    if (maxSpeed > 0) maxSpeed++;
+                                  });
+                                  await DatabaseHelper().updateSpeedLimit(
+                                    maxSpeed.toDouble(),
+                                  );
+                                  await _loadSpeedLimit();
+                                  Navigator.of(context).pop(); // close dialog
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Speed limit updated to $maxSpeed',
+                                      ),
+                                    ),
+                                  );
+                                  _saveSetting('maxSpeed', maxSpeed);
+                                }, // handle add
+                                color: Colors.cyan,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.cyan,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.blue),
-                                      //  color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-      
-                                    height: 40,
-                                    width: 70,
-                                    child: Center(
-                                      child: Text(
-                                        "CANCEL",
-                                        style: TextStyle(
-                                          color: Color(0xff7A7A7A),
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Mulish',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    SystemNavigator.pop();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Exit",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.amber,
-          fontFamily: 'Mulish',
-          fontWeight: FontWeight.bold,
-          //decoration: TextDecoration.underline,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile(String label, label2, {VoidCallback? onTap}) {
-    return SizedBox(
-      height: 60, // ⬅️ Adjust height if needed
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.grey.shade300, width: 1), // ✅ Border
-        ),
-        //   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // ⬅️ Outer spacing
-        //color: Color(0xffFFFFFF),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-          ), // ⬅️ Inner padding
-          child: ListTile(
-            contentPadding: EdgeInsets.fromLTRB(
-              10,
-              0,
-              0,
-              0,
-            ), // Remove default ListTile padding
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
+                        ],
+                      ),
+        
+                      // Analog Meter Max Speed (collapsed initially)
+        
+                      // Show speed in notification
+        
+                      // Speed limit alarm
+                      SwitchListTile(
+                        value: _isSpeedAlertEnabled,
+                        onChanged: (value) async {
+                          print(maxSpeed);
+                          setState(() {
+                            _isSpeedAlertEnabled = value;
+                          });
+                          setSpeedAlertEnabled(value);
+                        },
+                        activeColor: Colors.cyan,
+                        title: Text(
+                          "Speed limit alarm",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  label2,
-                  style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
+                SizedBox(height: 16),
+        
+                // Speed Warning Card
+                _sectionCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Speed Warning",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove, color: Colors.cyan),
+                            onPressed: () {
+                              setState(() {
+                                if (maxSpeed > 0) maxSpeed--;
+                              });
+                              _saveSetting('maxSpeed', maxSpeed);
+                            },
+                          ),
+                          Text(
+                            "$maxSpeed",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add, color: Colors.cyan),
+                            onPressed: () {
+                              setState(() {
+                                maxSpeed++;
+                              });
+                              _saveSetting('maxSpeed', maxSpeed);
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Analog meter max speed",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 8),
+                      SwitchListTile(
+                        value: showSpeedInNotification,
+                        onChanged: (val) {
+                          setState(() => showSpeedInNotification = val);
+                          _saveSetting('showSpeedInNotification', val);
+                        },
+                        activeColor: Colors.cyan,
+                        title: Text(
+                          "Show speed in notification",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          "Allow you to display speed in notification",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      Transform.scale(
+                        scale: 0.7,
+                        child: Switch(
+                          activeColor: Colors.amber,
+                          value: _isSpeedAlertEnabled,
+                          onChanged: (value) async {
+                            print(maxSpeed);
+                            setState(() {
+                              _isSpeedAlertEnabled = value;
+                            });
+                            setSpeedAlertEnabled(value);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Speed Warning 2nd Card
+                _sectionCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Speed Warning",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SwitchListTile(
+                        value: enableTrackingOnMap,
+                        onChanged: (val) {
+                          setState(() => enableTrackingOnMap = val);
+                          _saveSetting('enableTrackingOnMap', val);
+                        },
+                        activeColor: Colors.cyan,
+                        title: Text(
+                          "Enable Tracking On Map",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      SwitchListTile(
+                        value: keepScreenOn,
+                        onChanged: (val) {
+                          setState(() => keepScreenOn = val);
+                          _saveSetting('keepScreenOn', val);
+                        },
+                        activeColor: Colors.cyan,
+                        title: Text(
+                          "Keep Screen On",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                // Support Us Card
+                _sectionCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Support Us",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      _supportTile("Share app", _shareApp),
+                      _supportTile("Rate us", _showRateUsDialog),
+                      _supportTile("Privacy Policy", _openPrivacyPolicy),
+                      _supportTile("Feedback", _openFeedback),
+                      _supportTile("Exit", _confirmExit),
+                    ],
                   ),
                 ),
               ],
             ),
-            trailing: Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: onTap,
           ),
         ),
       ),
     );
   }
-}
 
-Widget _buildSettingsTile2({
-  required String label,
-  Widget? trailing,
-  VoidCallback? onTap,
-}) {
-  return ListTile(title: Text(label), trailing: trailing, onTap: onTap);
+  Widget _sectionCard({required Widget child}) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 2),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Color(0xff68DAE4), width: 1.5),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _speedUnitButton(String label, int index) {
+    bool selected = speedUnit == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() => speedUnit = index);
+          _saveSetting('speedUnit', index);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? Color(0xff68DAE4) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.black : Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _supportTile(String label, VoidCallback onTap) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label, style: TextStyle(color: Colors.white)),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        color: Color(0xff68DAE4),
+        size: 16,
+      ),
+      onTap: onTap,
+    );
+  }
 }
