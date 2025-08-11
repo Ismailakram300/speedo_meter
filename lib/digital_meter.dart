@@ -18,7 +18,7 @@ class DigitalSpeedScreen extends StatefulWidget {
 class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
   double _speed = 0.0;
   double _distance = 0.0;
-  Duration _elapsedTime = Duration.zero;// in m/s
+  Duration _elapsedTime = Duration.zero; // in m/s
   String status = 'Idle';
   int _speedLimit = 200; // default fallback
   bool _alertShown = false;
@@ -34,12 +34,13 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     _loadSpeedLimit();
     tracker.onSpeedChanged = _handleSpeedChange;
     // Manually simulate high speed to test alert
-    Future.delayed(Duration(seconds: 2), () {
-      _handleSpeedChange(
-        950,
-      ); // This should trigger the alert if speedLimit < 250
-    });
+    // Future.delayed(Duration(seconds: 2), () {
+    //   _handleSpeedChange(
+    //     950,
+    //   ); // This should trigger the alert if speedLimit < 250
+    // });
   }
+
   Future<void> _loadSpeedLimit() async {
     final dbLimit = await DatabaseHelper().getSpeedLimit();
     setState(() {
@@ -65,14 +66,13 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
         autoDismiss: true, // Will dismiss after 5 seconds
         soundPath: 'sounds/warning.mp3',
       );
-
-
     }
 
     if (speed <= _speedLimit) {
       _alertShown = false;
     }
   }
+
   void _setupTrackerListener() {
     final tracker = DistanceTracker();
 
@@ -110,7 +110,6 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
     final tracker = DistanceTracker();
 
     return Scaffold(
-
       backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
         child: Column(
@@ -121,6 +120,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
             Padding(
               padding: const EdgeInsets.all(14.0),
               child: Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Color(0xff141414),
@@ -130,14 +130,49 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                   ),
                 ),
                 height: 300,
-                child:   Center(
-                  child: Text(
-                    '${_speed.toStringAsFixed(1)} km/h',
-                    style: TextStyle(
-                      fontSize: 60,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.cyanAccent,
+                            width: 4,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${_speed.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontFamily: 'Digital',
+                              fontSize: 60,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff68DAE4),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Container(
+                        width: 60,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(13),
+                          color: Color(0xff363636),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Km/h',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -146,7 +181,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
             Padding(
               padding: const EdgeInsets.all(14),
               child: Container(
-                height: 270,
+                height: 280,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Color(0xff141414),
@@ -159,7 +194,15 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                   children: [
                     Column(
                       children: [
-                        TripStatsCard(duration:' ${_formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
+                        TripStatsCard(
+                          duration: '${_formatDuration(tracker.elapsedTime)}',
+                          distance:
+                              '${DistanceTracker().totalKm.toStringAsFixed(2)}',
+                          avgSpeed:
+                              '${DistanceTracker().averageSpeed.toStringAsFixed(0)}',
+                          topSpeed:
+                              '${DistanceTracker().topSpeed.toStringAsFixed(0)}',
+                        ),
                         // StatRow(
                         //   title1: 'Distance',
                         //   value1:
@@ -177,9 +220,9 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                         // ),
                       ],
                     ),
-        
+
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(10,0,10,10),
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                       child: TrackingControls(
                         onUpdate: () {
                           setState(() {
