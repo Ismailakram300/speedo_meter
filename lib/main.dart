@@ -87,7 +87,7 @@ class TripStatsCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 13),
             Row(
               children: [
                 _StatColumn(
@@ -103,7 +103,7 @@ class TripStatsCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height:14),
+           // const SizedBox(height:14),
 
 
           ],
@@ -139,9 +139,11 @@ class _StatColumn extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   color: Color(0xFF68DAE4),
-                  fontSize: 12,
+
+                  fontSize: 30,
                   fontFamily: 'Digital', // Use your digital font here
                   letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               if (unit.isNotEmpty)
@@ -192,7 +194,7 @@ class startButton extends StatelessWidget {
           textStyle: const TextStyle(
             color: Color(0xff032B29),
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 18,
           ),
         ),
         child: const Row(
