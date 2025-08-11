@@ -220,33 +220,39 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
                         ),
                       ),
                       child: Center(
-                        child: Row(
+                        child: SizedBox(
+                          height: 30,
+                          child: Row(
 
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
 
-                              child: Image.asset(
-                                "assets/loc_mark/loc_mark.png",
-                                height: 50,
-                                width: 40,
-                              ),height: 50,
-                              width: 50,
-                            ),
+                                child: Image.asset(
+                                  "assets/loc_mark/loc_mark.png",
+                                  height: 50,
+                                  width: 40,
+                                ),height: 50,
+                                width: 50,
+                              ),
 
-                           //const SizedBox(height: 8),
-                            SizedBox(
-                              height: 50,
+                              //const SizedBox(height: 8),
+                              SingleChildScrollView(
 
-                              child: Text(
-                                _currentAddress!,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
+                                child: SizedBox(
+                                  height: 50,
+                                
+                                  child: Text(
+                                    _currentAddress!,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
