@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speedo_meter/widgets/newmete2.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'botom_nav_bar.dart';
 import 'gauge_meter.dart';
 import 'widgets/newguage.dart';
 import 'widgets/custom_gauge.dart';
@@ -126,180 +127,203 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Gauge Style'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          // Demo speed slider
-          Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
+    return  SafeArea(
+        child: GradientBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.white, // ← change to your desired color
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Select Analog Style',
+                style:
+                TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            body: Column(
+
               children: [
-                Text(
-                  'Demo Speed: ${demoSpeed.toStringAsFixed(1)} km/h',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                // Demo speed slider
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 25,),
+                      Text(
+                        'Demo Speed: ${demoSpeed.toStringAsFixed(1)} km/h',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+                      ),
+                      Slider(
+                        value: demoSpeed,
+                        min: 0,
+                        max: 240,
+
+                        activeColor: Color(0xff68DAE4),
+                        divisions: 240,
+                        label: '${demoSpeed.toStringAsFixed(1)} km/h',
+                        onChanged: (value) {
+                          setState(() {
+                            demoSpeed = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                Slider(
-                  value: demoSpeed,
-                  min: 0,
-                  max: 240,
-                  divisions: 240,
-                  label: '${demoSpeed.toStringAsFixed(1)} km/h',
-                  onChanged: (value) {
-                    setState(() {
-                      demoSpeed = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
 
-          // Gauge preview
-          Expanded(
-            child: Container(
-              height: 400,
-              margin: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: gaugeOptions[selectedGaugeIndex]['widget'](demoSpeed),
-              ),
-            ),
-          ),
-          Expanded(
-            child: CarouselSlider(
-              items: gaugeOptions.map((i) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.symmetric(horizontal: 5.0),
-                      decoration: BoxDecoration(color: Colors.amber),
-                      child: i['widget'](demoSpeed)
-                      ,
-                    );
-                  },
-                );
-              }).toList(),
-              carouselController: _carouselController,
-              options: CarouselOptions(
-                height: 320,
-                enlargeCenterPage: true,
-                enableInfiniteScroll: false,
-                onPageChanged: (index, reason) {
-                  setState(() => selectedGaugeIndex = index);
-                },
-              ),
-            ),
-          ),
+                // Gauge preview
+SizedBox(height: 39,),
+                Flexible(
+                  child: CarouselSlider(
+                    items: gaugeOptions.map((i) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 300,
+                            margin: EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Color(0xff141414),
 
-          SizedBox(height: 20),
-
-          // Gauge selection
-          // Expanded(
-          //   child: ListView.builder(
-          //     padding: EdgeInsets.symmetric(horizontal: 16),
-          //     itemCount: gaugeOptions.length,
-          //     itemBuilder: (context, index) {
-          //       final gauge = gaugeOptions[index];
-          //       final isSelected = selectedGaugeIndex == index;
-          //
-          //       return Card(
-          //         margin: EdgeInsets.only(bottom: 12),
-          //         elevation: isSelected ? 8 : 2,
-          //         color: isSelected ? Colors.blue.shade50 : Colors.white,
-          //         child: ListTile(
-          //           leading: Container(
-          //             width: 50,
-          //             height: 50,
-          //             decoration: BoxDecoration(
-          //               color: isSelected ? Colors.blue : Colors.grey.shade200,
-          //               borderRadius: BorderRadius.circular(8),
-          //             ),
-          //             child: Icon(
-          //               Icons.speed,
-          //               color: isSelected ? Colors.white : Colors.grey.shade600,
-          //             ),
-          //           ),
-          //           title: Text(
-          //             gauge['name'],
-          //             style: TextStyle(
-          //               fontWeight: isSelected
-          //                   ? FontWeight.bold
-          //                   : FontWeight.normal,
-          //               color: isSelected
-          //                   ? Colors.blue.shade800
-          //                   : Colors.black87,
-          //             ),
-          //           ),
-          //           subtitle: Text(
-          //             gauge['description'],
-          //             style: TextStyle(
-          //               color: isSelected
-          //                   ? Colors.blue.shade600
-          //                   : Colors.grey.shade600,
-          //             ),
-          //           ),
-          //           trailing: isSelected
-          //               ? Icon(Icons.check_circle, color: Colors.blue, size: 24)
-          //               : null,
-          //           onTap: () {
-          //             setState(() {
-          //               selectedGaugeIndex = index;
-          //             });
-          //           },
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
-
-          // Apply button
-          Container(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async{
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      await prefs.setInt('selectedGaugeIndex', selectedGaugeIndex);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => SpeedometerScreen()),
+                              border: Border.all(color: Color(0xff68DAE4)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                child: i['widget'](demoSpeed),
+                              ),
+                            ),
+                          );
+                        },
                       );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                    }).toList(),
+                    carouselController: _carouselController,
+                    options: CarouselOptions(
+                      height: 320,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: false,
+                      onPageChanged: (index, reason) {
+                        setState(() => selectedGaugeIndex = index);
+                      },
                     ),
-                    child: Text(
-                      'Apply Gauge Style',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                SizedBox(height: 70),
+
+                // Gauge selection
+                // Expanded(
+                //   child: ListView.builder(
+                //     padding: EdgeInsets.symmetric(horizontal: 16),
+                //     itemCount: gaugeOptions.length,
+                //     itemBuilder: (context, index) {
+                //       final gauge = gaugeOptions[index];
+                //       final isSelected = selectedGaugeIndex == index;
+                //
+                //       return Card(
+                //         margin: EdgeInsets.only(bottom: 12),
+                //         elevation: isSelected ? 8 : 2,
+                //         color: isSelected ? Colors.blue.shade50 : Colors.white,
+                //         child: ListTile(
+                //           leading: Container(
+                //             width: 50,
+                //             height: 50,
+                //             decoration: BoxDecoration(
+                //               color: isSelected ? Colors.blue : Colors.grey.shade200,
+                //               borderRadius: BorderRadius.circular(8),
+                //             ),
+                //             child: Icon(
+                //               Icons.speed,
+                //               color: isSelected ? Colors.white : Colors.grey.shade600,
+                //             ),
+                //           ),
+                //           title: Text(
+                //             gauge['name'],
+                //             style: TextStyle(
+                //               fontWeight: isSelected
+                //                   ? FontWeight.bold
+                //                   : FontWeight.normal,
+                //               color: isSelected
+                //                   ? Colors.blue.shade800
+                //                   : Colors.black87,
+                //             ),
+                //           ),
+                //           subtitle: Text(
+                //             gauge['description'],
+                //             style: TextStyle(
+                //               color: isSelected
+                //                   ? Colors.blue.shade600
+                //                   : Colors.grey.shade600,
+                //             ),
+                //           ),
+                //           trailing: isSelected
+                //               ? Icon(Icons.check_circle, color: Colors.blue, size: 24)
+                //               : null,
+                //           onTap: () {
+                //             setState(() {
+                //               selectedGaugeIndex = index;
+                //             });
+                //           },
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+
+                // Apply button
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setInt(
+                              'selectedGaugeIndex',
+                              selectedGaugeIndex,
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => BottomNavigationBarItemScreen()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xff68DAE4),
+
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Apply',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff141414),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      );
+
   }
 }
 
@@ -351,4 +375,23 @@ Widget build(BuildContext context) {
       ),
     ),
   );
+}
+class GradientBackground extends StatelessWidget {
+  final Widget child;
+
+  const GradientBackground({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF033438), Color(0xFF081214)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: child,
+    );
+  }
 }
