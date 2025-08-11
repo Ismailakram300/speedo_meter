@@ -50,7 +50,7 @@ import '../main.dart';
           //   'Time: ${formatDuration(tracker.elapsedTime)}',
           //   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           // ),
-          const SizedBox(height: 10),
+         // const SizedBox(height: 10),
           Wrap(
             spacing: 10,
             children: [
