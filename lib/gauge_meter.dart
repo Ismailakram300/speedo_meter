@@ -45,9 +45,9 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     _setupTrackerListener();
     tracker.onSpeedChanged = _handleSpeedChange;
     _checkPermissions();
-    Future.delayed(Duration(seconds: 3), () {
-      _handleSpeedChange(300); // Triggers alert with simulated speed
-    });
+    // Future.delayed(Duration(seconds: 3), () {
+    //   _handleSpeedChange(300); // Triggers alert with simulated speed
+    // });
 
     _startUITimer();
   }
