@@ -335,7 +335,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
             Padding(
               padding: const EdgeInsets.all(14),
               child: Container(
-                height: 270,
+                height: 280,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Color(0xff141414),
@@ -348,25 +348,9 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
                   children: [
                     Column(
                       children: [
-                        TripStatsCard(duration:' ${formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
-                        // StatRow(
-                        //   title1: 'Distance',
-                        //   value1:
-                        //       '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
-                        //   title2: 'Top Speed',
-                        //   value2:
-                        //       '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
-                        // ),
-                        // StatRow(
-                        //   title1: 'Avg Speed',
-                        //   value1:
-                        //       '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
-                        //   title2: 'Duration',
-                        //   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
-                        // ),
+                        TripStatsCard(duration:'${formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)}', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(0)} ', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(0)} '),
                       ],
                     ),
-
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10,0,10,10),
                       child: TrackingControls(
