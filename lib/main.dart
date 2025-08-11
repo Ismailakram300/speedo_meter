@@ -190,6 +190,7 @@ class startButton extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(vertical: 16),
           textStyle: const TextStyle(
+            color: Color(0xff032B29),
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
