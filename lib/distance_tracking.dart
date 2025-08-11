@@ -19,6 +19,9 @@ class DistanceTracker {
   int _speedSampleCount = 0;
   double get topSpeed => _topSpeed;
   double get averageSpeed => _averageSpeed;
+  bool get isTracking => _state == TrackingState.running;
+  bool get isPaused => _state == TrackingState.paused;
+  bool get isStopped => _state == TrackingState.stopped;
 
 
   // A callback to notify UI
@@ -27,7 +30,7 @@ class DistanceTracker {
   Stream<Position>? _positionStream;
   StreamSubscription<Position>? _subscription;
 
-  bool get isTracking => _isTracking;
+  TrackingState _state = TrackingState.stopped;
   double get totalKm => totalDistance / 1000;
   Position? get currentPosition => lastPosition;
 
@@ -35,9 +38,27 @@ class DistanceTracker {
   Timer? _timer;
 
   // Start tracking + start timer
-  void startTracking() {
-    if (_isTracking) return;
-    _isTracking = true;
+  void startTracking() async{
+    LocationPermission permission;
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location permission denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permission permanently denied');
+      await Geolocator.openAppSettings();
+      return;
+    }
+    // if (_isTracking) return;
+    // _isTracking = true;
+    if (_state == TrackingState.running) return;
+    _state = TrackingState.running;
 
     _startTimer();
 
@@ -121,27 +142,32 @@ class DistanceTracker {
   }
 
   void pauseTracking() {
-    _isTracking = false;
+    if (_state != TrackingState.running) return;
+
+    _state = TrackingState.paused;
     _subscription?.pause();
     _timer?.cancel();
     _timer = null;
   }
 
+
   void resumeTracking() {
-    if (!_isTracking) {
-      _isTracking = true;
-      _subscription?.resume();
-      _startTimer();
-    }
+    if (_state != TrackingState.paused) return;
+
+    _state = TrackingState.running;
+    _subscription?.resume();
+    _startTimer();
   }
 
+
   void stopTracking() {
-    _isTracking = false;
+    _state = TrackingState.stopped;
     _subscription?.cancel();
     _subscription = null;
     _timer?.cancel();
     _timer = null;
   }
+
 
   void reset() {
     totalDistance = 0.0;
@@ -152,5 +178,6 @@ class DistanceTracker {
     _averageSpeed = 0.0;
     _speedSampleCount = 0;
   }
+
 
 }
