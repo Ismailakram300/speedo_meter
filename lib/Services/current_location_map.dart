@@ -15,7 +15,8 @@ class CurrentLocationMap extends StatefulWidget {
   State<CurrentLocationMap> createState() => _CurrentLocationMapState();
 }
 
-class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBindingObserver {
+class _CurrentLocationMapState extends State<CurrentLocationMap>
+    with WidgetsBindingObserver {
   late GoogleMapController _mapController;
   final Map<String, Marker> _markers = {};
   Position? _currentPosition;
@@ -102,7 +103,9 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
             markerId: const MarkerId('currentLocation'),
             position: LatLng(position.latitude, position.longitude),
             infoWindow: const InfoWindow(title: 'You are here'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueAzure,
+            ),
           );
         });
         await _getAddressFromLatLng(position);
@@ -110,9 +113,9 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
     } catch (e) {
       print("Error getting current location: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error getting location: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error getting location: $e")));
       }
     }
   }
@@ -130,10 +133,9 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
       if (mounted) {
         setState(() {
           _currentAddress =
-          "${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}";
+              " ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}";
         });
       }
-
     } catch (e) {
       print("Error fetching address: $e");
       if (mounted) {
@@ -169,7 +171,6 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
       body: SingleChildScrollView(
         child: Column(
           children: [
-            
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 25, 10, 10),
               child: Container(
@@ -186,20 +187,19 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                 child: _currentPosition == null
                     ? const Center(child: CircularProgressIndicator())
                     : ClipRRect(
-
-                  borderRadius: BorderRadius.circular(11),
-                      child: GoogleMap(
-                                        onMapCreated: _onMapCreated,
-                                        initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        _currentPosition!.latitude,
-                        _currentPosition!.longitude,
+                        borderRadius: BorderRadius.circular(11),
+                        child: GoogleMap(
+                          onMapCreated: _onMapCreated,
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(
+                              _currentPosition!.latitude,
+                              _currentPosition!.longitude,
+                            ),
+                            zoom: 14,
+                          ),
+                          markers: _markers.values.toSet(),
+                        ),
                       ),
-                      zoom: 14,
-                                        ),
-                                        markers: _markers.values.toSet(),
-                                      ),
-                    ),
               ),
             ),
             Column(
@@ -214,31 +214,44 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                         color: Color(0xff141414),
 
                         borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all( color: Color(0xff68DAE4), // Border color
-                          width: 2.0,),
+                        border: Border.all(
+                          color: Color(0xff68DAE4), // Border color
+                          width: 2.0,
+                        ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset("assets/loc_mark.png"),
-                          const Text(
-                            'Current Address:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.white
+                      child: Center(
+                        child: Row(
+
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+
+                              child: Image.asset(
+                                "assets/loc_mark/loc_mark.png",
+                                height: 50,
+                                width: 40,
+                              ),height: 50,
+                              width: 50,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _currentAddress!,
-                            style: const TextStyle(fontSize: 14,color: Colors.white),
-                          ),
-                        ],
+
+                           //const SizedBox(height: 8),
+                            SizedBox(
+                              height: 50,
+
+                              child: Text(
+                                _currentAddress!,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-              //  SizedBox(height: 10),
+                //  SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.all(14),
                   child: Container(
@@ -256,18 +269,17 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                         Column(
                           children: [
                             TripStatsCard(
-                              duration: '${_formatDuration(tracker.elapsedTime)}',
+                              duration:
+                                  '${_formatDuration(tracker.elapsedTime)}',
                               distance:
-                              '${DistanceTracker().totalKm.toStringAsFixed(2)}',
+                                  '${DistanceTracker().totalKm.toStringAsFixed(2)}',
                               avgSpeed:
-                              '${DistanceTracker().averageSpeed.toStringAsFixed(0)}',
+                                  '${DistanceTracker().averageSpeed.toStringAsFixed(0)}',
                               topSpeed:
-                              '${DistanceTracker().topSpeed.toStringAsFixed(0)}',
+                                  '${DistanceTracker().topSpeed.toStringAsFixed(0)}',
                             ),
                           ],
                         ),
-
-
                       ],
                     ),
                   ),
