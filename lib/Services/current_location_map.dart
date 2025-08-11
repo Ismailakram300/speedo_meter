@@ -220,6 +220,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Image.asset("assets/loc_mark.png"),
                           const Text(
                             'Current Address:',
                             style: TextStyle(
@@ -237,11 +238,11 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                       ),
                     ),
                   ),
-                SizedBox(height: 10),
+              //  SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.all(14),
                   child: Container(
-                    height: 200,
+                    height: 210,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: Color(0xff141414),
@@ -254,22 +255,15 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> with WidgetsBin
                       children: [
                         Column(
                           children: [
-                            TripStatsCard(duration:' ${_formatDuration(tracker.elapsedTime)}', distance:  '${DistanceTracker().totalKm.toStringAsFixed(2)} km', avgSpeed: '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h', topSpeed: '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h'),
-                            // StatRow(
-                            //   title1: 'Distance',
-                            //   value1:
-                            //       '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
-                            //   title2: 'Top Speed',
-                            //   value2:
-                            //       '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
-                            // ),
-                            // StatRow(
-                            //   title1: 'Avg Speed',
-                            //   value1:
-                            //       '${DistanceTracker().averageSpeed.toStringAsFixed(1)} km/h',
-                            //   title2: 'Duration',
-                            //   value2: 'Time: ${formatDuration(tracker.elapsedTime)}',
-                            // ),
+                            TripStatsCard(
+                              duration: '${_formatDuration(tracker.elapsedTime)}',
+                              distance:
+                              '${DistanceTracker().totalKm.toStringAsFixed(2)}',
+                              avgSpeed:
+                              '${DistanceTracker().averageSpeed.toStringAsFixed(0)}',
+                              topSpeed:
+                              '${DistanceTracker().topSpeed.toStringAsFixed(0)}',
+                            ),
                           ],
                         ),
 
