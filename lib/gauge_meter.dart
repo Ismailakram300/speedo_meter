@@ -45,6 +45,10 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
     _setupTrackerListener();
     tracker.onSpeedChanged = _handleSpeedChange;
     _checkPermissions();
+    Future.delayed(Duration(seconds: 3), () {
+      _handleSpeedChange(300); // Triggers alert with simulated speed
+    });
+
     _startUITimer();
   }
 
@@ -316,15 +320,22 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
                     width: 2.0,
                   ),
                 ),
-                height: 250,
-                child: _buildGauge(),
+                height: 300,
+                child: Center(
+                  child: Container(
+                      color: Colors.transparent,
+                      width: 400,
+                      height: 250,
+
+                      child: _buildGauge()),
+                ),
               ),
             ),
-            SizedBox(height: 10),
+            //SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.all(14),
               child: Container(
-                height: 300,
+                height: 270,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Color(0xff141414),
