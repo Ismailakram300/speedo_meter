@@ -52,60 +52,94 @@ import '../main.dart';
           // ),
           const SizedBox(height: 10),
           Wrap(
-            spacing: 1,
+            spacing: 10,
             children: [
-              startButton(
-                onStart: tracker.isTracking
-                    ? null
-                    : () {
-                  tracker.startTracking();
-                  setState(() {});
-                },
+              // Start Button – only show when not tracking and not paused
+              if (!tracker.isTracking && !tracker.isPaused)
+                startButton(
+                  onStart: () {
+                    tracker.startTracking();
+                    setState(() {});
+                  },
 
+                ),
 
-              ),
-              ElevatedButton(
-                onPressed: !tracker.isTracking
-                    ? null
-                    : () {
-                        tracker.pauseTracking();
-                        setState(() {});
-                      },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Pause'),
-              ),
-              ElevatedButton(
-                onPressed: tracker.isTracking
-                    ? null
-                    : () {
-                        tracker.resumeTracking();
-                        setState(() {});
-                      },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-                child: const Text('Resume'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  tracker.stopTracking();
+              // Pause Button – show only when actively tracking (not paused)
 
-                  final record = TrackingRecord(
-                    distance: tracker.totalKm,
-                    averageSpeed: tracker.averageSpeed,
-                    topSpeed: tracker.topSpeed,
-                    duration: tracker.elapsedTime,
-                    timestamp: DateTime.now(),
-                  );
+              // Reset Button – show when either tracking or paused
+              if (tracker.isTracking || tracker.isPaused)
+                customButton(
+                  onStart: () async {
+                    tracker.stopTracking();
+                    tracker.reset();
+                    setState(() {});
+                  }, text: 'Reset', bgColor: Color(0xff363636),
+                  // style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                  // child: const Text('Reset'),
+                ),
+              if (tracker.isTracking || tracker.isPaused)
+                customButton(
+                  onStart: () async {
+                    tracker.stopTracking();
 
-                  await DatabaseHelper().insertRecord(record);
+                    final record = TrackingRecord(
+                      distance: tracker.totalKm,
+                      averageSpeed: tracker.averageSpeed,
+                      topSpeed: tracker.topSpeed,
+                      duration: tracker.elapsedTime,
+                      timestamp: DateTime.now(),
+                    );
 
-                  tracker.reset();
-                  setState(() {});
-                },
-                child: const Text('Reset'),
-              ),
+                    await DatabaseHelper().insertRecord(record);
+
+                    tracker.reset();
+                    setState(() {});
+                  },
+                  bgColor: Color(0xff68DAE4),
+                 text: 'Stop',
+                ),
+              if (tracker.isTracking && !tracker.isPaused)
+                customButton(
+                  onStart: () {
+                    tracker.pauseTracking();
+                    setState(() {});
+                  },
+                  bgColor: Color(0xff363636),
+                  text: 'Pause',
+                ),
+
+              // Resume Button – show only when paused
+              if (tracker.isPaused)
+                customButton(
+                  onStart: () {
+                    tracker.resumeTracking();
+                    setState(() {});
+                  },
+                  bgColor: Color(0xff363636),
+                  text: 'Resume',
+                ),
+
             ],
-          ),
+          )
+
+
         ],
       );
     }
+  }
+  Widget _buildCustomButton(String text, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
