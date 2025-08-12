@@ -52,6 +52,7 @@ class StatRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+
         _buildStatBox(title1, value1),
         _buildStatBox(title2, value2),
       ],
