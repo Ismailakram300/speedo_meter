@@ -90,6 +90,7 @@ flutter:
       fonts:
         - asset: assets/fonts/ds_digital/DS-DIGI.TTF
         - asset: assets/fonts/ds_digital/DS-DIGIB.TTF
+
         - asset: assets/fonts/ds_digital/DS-DIGII.TTF
         - asset: assets/fonts/ds_digital/DS-DIGIT.TTF
     - family:  BeVietnamPro
