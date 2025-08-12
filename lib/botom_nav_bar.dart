@@ -21,6 +21,7 @@ class _BottomNavigationBarItemScreenState extends State<BottomNavigationBarItemS
     Center(child: SpeedometerScreen()),
     Center(child: DigitalSpeedScreen()),
 
+
     Center(child: CurrentLocationMap()),
     //  Center(child: GaugeSelectionScreen()),
   ];
