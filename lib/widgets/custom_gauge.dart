@@ -131,6 +131,7 @@ class GaugePainter extends CustomPainter {
 
     // Draw digital speed
     final speedPainter = TextPainter(
+
       text: TextSpan(
         text: '${speed.toInt()} KM/H',
         style: const TextStyle(
