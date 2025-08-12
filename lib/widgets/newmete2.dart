@@ -301,6 +301,7 @@ class Mycard extends StatelessWidget {
   Color color;
   Mycard({required this.imagePath, required this.color, required this.name});
 
+
   @override
   Widget build(BuildContext context) {
     return Card(
