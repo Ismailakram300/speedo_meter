@@ -18,6 +18,7 @@ class SpeedAlertHelper {
   }) async {
     if (_isDialogShowing) return;
 
+
     _isDialogShowing = true;
 
     // Play sound
