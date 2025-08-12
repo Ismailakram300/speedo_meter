@@ -135,6 +135,7 @@ class _StatColumn extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+
               Text(
                 value,
                 style: const TextStyle(
