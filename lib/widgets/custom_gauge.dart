@@ -139,6 +139,7 @@ class GaugePainter extends CustomPainter {
           fontWeight: FontWeight.bold,
         ),
       ),
+
       textDirection: TextDirection.ltr,
     );
     speedPainter.layout();
