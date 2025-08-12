@@ -12,6 +12,7 @@ class FullscreenGaugePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
+
         child: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: RotatedBox(
