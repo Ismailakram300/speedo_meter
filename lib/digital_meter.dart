@@ -146,6 +146,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                             width: 4,
                           ),
                         ),
+
                         child: Center(
                           child: Text(
                             '${_speed.toStringAsFixed(0)}',
