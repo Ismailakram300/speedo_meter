@@ -220,6 +220,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
                         ),
                       ),
                       child: Center(
+
                         child: SizedBox(
                           height: 30,
                           child: Row(
