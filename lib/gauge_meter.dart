@@ -39,6 +39,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
 
   @override
   void initState() {
+
     super.initState();
     _loadSpeedLimit();
     _loadGaugePreference();
