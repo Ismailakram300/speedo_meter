@@ -151,6 +151,7 @@ class GaugePainter extends CustomPainter {
     );
   }
 
+
   @override
   bool shouldRepaint(covariant GaugePainter oldDelegate) {
     return oldDelegate.speed != speed;
