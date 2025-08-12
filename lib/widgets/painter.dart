@@ -333,6 +333,7 @@ class GaugePainter extends CustomPainter {
     canvas.drawCircle(center, 12, hubBorderPaint);
   }
 
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
