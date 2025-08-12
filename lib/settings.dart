@@ -294,6 +294,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //   onPressed: () => Navigator.pop(context),
             // ),
             title: Text(
+
               'Settings',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
