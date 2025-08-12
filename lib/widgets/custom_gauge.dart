@@ -145,8 +145,7 @@ class GaugePainter extends CustomPainter {
     );
     speedPainter.layout();
 
-    speedPaint
-    er.paint(
+    speedPainter.paint(
       canvas,
       Offset(center.dx - speedPainter.width / 2, center.dy + 40),
     );
