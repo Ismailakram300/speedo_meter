@@ -30,6 +30,7 @@ class _SpeedometerScreenState extends State<SpeedometerScreen> {
   String status = 'Idle';
   int _speedLimit = 200; // default fallback
   bool _alertShown = false;
+
   final tracker = DistanceTracker();
   double _distance = 0.0;
   Duration _elapsedTime = Duration.zero;
