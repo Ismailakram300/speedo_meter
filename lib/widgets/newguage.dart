@@ -13,6 +13,7 @@ class CustomSpeedometerGauge extends StatelessWidget {
       backgroundColor: const Color(0xFF043245), // dark teal background
       // body: Center(
       //   child: SfRadialGauge(
+
       //     axes: <RadialAxis>[
       //       RadialAxis(
       //         minimum: 0,
