@@ -22,6 +22,7 @@ class LocationService {
         }
       }
 
+
       //get loc
       return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     } catch (e) {
