@@ -939,6 +939,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               value: _isSpeedAlertEnabled,
                               onChanged: (value) async {
                                 setState(() {
+
                                   _isSpeedAlertEnabled = value;
                                 });
                                 setSpeedAlertEnabled(value);
