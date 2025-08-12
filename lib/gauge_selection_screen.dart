@@ -146,6 +146,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
                 style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
+
             ),
             body: Column(
 
