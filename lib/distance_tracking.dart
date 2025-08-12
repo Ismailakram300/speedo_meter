@@ -50,6 +50,7 @@ class DistanceTracker {
       }
     }
 
+
     if (permission == LocationPermission.deniedForever) {
       print('Location permission permanently denied');
       await Geolocator.openAppSettings();
