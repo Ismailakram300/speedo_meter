@@ -30,6 +30,7 @@ class PermissionScreen extends StatelessWidget {
           ),
         ),
         body: Container(
+
           width: double.infinity,
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
