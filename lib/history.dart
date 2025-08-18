@@ -221,6 +221,7 @@ class HistoryScreen extends StatelessWidget {
                         //       crossAxisAlignment: CrossAxisAlignment.start,
                         //       children: [
 
+
                         //           children: [
                         //             Icon(Icons.fiber_manual_record, color: Colors.green, size: 16),
 
