@@ -283,6 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
+
             iconTheme: IconThemeData(
               color: Colors.white, // ← change to your desired color
             ),
