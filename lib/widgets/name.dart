@@ -931,6 +931,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Mulish',
                             ),
+
                           ),
                           Transform.scale(
                             scale: 0.7,
