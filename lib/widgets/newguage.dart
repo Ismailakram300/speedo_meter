@@ -5,6 +5,7 @@ import 'custom_gauge.dart';
 class CustomSpeedometerGauge extends StatelessWidget {
   final double speed;
 
+
   const CustomSpeedometerGauge({super.key, required this.speed});
 
   @override
