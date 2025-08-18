@@ -280,6 +280,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: GradientBackground(
+
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
