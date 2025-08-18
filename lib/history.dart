@@ -211,7 +211,6 @@ class HistoryScreen extends StatelessWidget {
                         //             ),
                         //           ],
                         //         ),
-
                         //       ],
                         //     ),
 
