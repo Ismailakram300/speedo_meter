@@ -223,6 +223,7 @@ class HistoryScreen extends StatelessWidget {
                         //         Column(
                         //           children: [
                         //             Icon(Icons.fiber_manual_record, color: Colors.green, size: 16),
+
                         //           ],
                         //         ),
                         //         SizedBox(width: 8),
