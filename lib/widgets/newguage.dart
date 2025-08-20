@@ -8,6 +8,7 @@ class CustomSpeedometerGauge extends StatelessWidget {
 
   const CustomSpeedometerGauge({super.key, required this.speed});
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
