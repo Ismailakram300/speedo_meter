@@ -125,6 +125,7 @@ class _StatColumn extends StatelessWidget {
     required this.unit,
   });
 
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
