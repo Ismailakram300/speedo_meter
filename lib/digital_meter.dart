@@ -131,6 +131,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                 ),
                 height: 300,
                 child: Center(
+
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
 
