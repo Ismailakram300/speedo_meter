@@ -141,6 +141,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
                 icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
+
               title: Text(
 
                 'Select Analog Style',
