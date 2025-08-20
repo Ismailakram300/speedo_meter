@@ -7,6 +7,7 @@ class FullscreenGaugePage extends StatelessWidget {
 
   const FullscreenGaugePage({Key? key, required this.speed}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
