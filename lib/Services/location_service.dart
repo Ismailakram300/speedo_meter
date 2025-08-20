@@ -10,6 +10,7 @@ class LocationService {
       if (!serviceEnabled) {
         log("Location services are disabled. ");
         return null;
+
       }
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
