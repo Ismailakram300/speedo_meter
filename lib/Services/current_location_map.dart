@@ -203,6 +203,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
               ),
             ),
             Column(
+
               children: [
                 if (_currentAddress != null)
                   Padding(
