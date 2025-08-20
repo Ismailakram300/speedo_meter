@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
 
+
 class SpeedAlertHelper {
   static final AudioPlayer _player = AudioPlayer();
   static bool _isDialogShowing = false;
