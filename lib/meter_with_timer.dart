@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class FullscreenGaugePage extends StatelessWidget {
+
   final double speed;
 
   const FullscreenGaugePage({Key? key, required this.speed}) : super(key: key);
