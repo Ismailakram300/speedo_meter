@@ -34,6 +34,7 @@ class DistanceTracker {
   double get totalKm => totalDistance / 1000;
   Position? get currentPosition => lastPosition;
 
+
   Duration elapsedTime = Duration.zero;
   Timer? _timer;
 
