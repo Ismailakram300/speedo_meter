@@ -34,6 +34,7 @@ class StatRow extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
+
               Text(
                 value,
                 style: const TextStyle(
