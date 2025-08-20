@@ -120,6 +120,7 @@ class _StatColumn extends StatelessWidget {
 
   const _StatColumn({
     required this.label,
+
     required this.value,
     required this.unit,
   });
