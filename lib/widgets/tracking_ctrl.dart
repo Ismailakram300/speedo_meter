@@ -65,6 +65,7 @@ import '../main.dart';
                 ),
 
 
+
               // Pause Button – show only when actively tracking (not paused)
 
               // Reset Button – show when either tracking or paused
