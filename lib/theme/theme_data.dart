@@ -10,6 +10,7 @@ class AppTheme {
         elevation: 4,
         titleTextStyle: TextStyle(
 
+
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
