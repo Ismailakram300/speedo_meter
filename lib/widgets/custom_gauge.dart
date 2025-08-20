@@ -117,6 +117,7 @@ class GaugePainter extends CustomPainter {
       ..color = Colors.lightBlueAccent
       ..strokeWidth = 4;
 
+
     canvas.drawLine(
 
       center,
