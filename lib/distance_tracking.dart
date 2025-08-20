@@ -36,6 +36,7 @@ class DistanceTracker {
 
 
   Duration elapsedTime = Duration.zero;
+
   Timer? _timer;
 
   // Start tracking + start timer
