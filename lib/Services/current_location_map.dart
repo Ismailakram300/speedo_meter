@@ -202,6 +202,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
                       ),
               ),
             ),
+
             Column(
 
               children: [
