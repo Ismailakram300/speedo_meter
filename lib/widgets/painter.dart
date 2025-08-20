@@ -318,6 +318,7 @@ class GaugePainter extends CustomPainter {
       center.dy - needleWidth * math.cos(speedAngle),
     );
 
+
     needlePath.close();
     canvas.drawPath(needlePath, needlePaint);
 
