@@ -281,6 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return SafeArea(
       child: GradientBackground(
 
+
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
