@@ -11,6 +11,7 @@ class PermissionScreen extends StatelessWidget {
     this.isLocationAllowed = true,
   }) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
