@@ -16,6 +16,7 @@ class PermissionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
 
+
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
