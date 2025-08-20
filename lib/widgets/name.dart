@@ -934,6 +934,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                           ),
                           Transform.scale(
+
                             scale: 0.7,
                             child:   Switch(
                               activeColor: Colors.amber,
