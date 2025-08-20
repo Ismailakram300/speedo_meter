@@ -129,6 +129,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                     width: 2.0,
                   ),
                 ),
+
                 height: 300,
                 child: Center(
 
