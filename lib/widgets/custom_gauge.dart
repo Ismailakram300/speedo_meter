@@ -118,6 +118,7 @@ class GaugePainter extends CustomPainter {
       ..strokeWidth = 4;
 
     canvas.drawLine(
+
       center,
       Offset(
         center.dx + needleLength * cos(needleAngle),
