@@ -281,6 +281,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
             SizedBox(height: 10),
 
             TrackingControls(
+
               onUpdate: () {
                 setState(() {
                   _distance = tracker.totalKm;
