@@ -35,6 +35,7 @@ class DistanceTracker {
   Position? get currentPosition => lastPosition;
 
 
+
   Duration elapsedTime = Duration.zero;
 
   Timer? _timer;
