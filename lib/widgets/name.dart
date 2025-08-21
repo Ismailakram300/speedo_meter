@@ -940,6 +940,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child:   Switch(
                               activeColor: Colors.amber,
                               value: _isSpeedAlertEnabled,
+
                               onChanged: (value) async {
                                 setState(() {
 
