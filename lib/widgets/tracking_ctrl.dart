@@ -43,10 +43,12 @@ import '../main.dart';
       return "$h:$m:$s";
     }
 
+
     @override
     Widget build(BuildContext context) {
       return Column(
         children: [
+
           // Text(
           //   'Time: ${formatDuration(tracker.elapsedTime)}',
           //   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
