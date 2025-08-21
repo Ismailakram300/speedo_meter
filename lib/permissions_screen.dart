@@ -20,6 +20,7 @@ class PermissionScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+
           backgroundColor: Color(0xff68DAE4),
           elevation: 0,
           leading: IconButton(
