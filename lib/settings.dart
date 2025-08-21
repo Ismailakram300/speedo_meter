@@ -287,6 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             iconTheme: IconThemeData(
+
               color: Colors.white, // ← change to your desired color
             ),
 
