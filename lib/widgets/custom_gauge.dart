@@ -113,6 +113,7 @@ class GaugePainter extends CustomPainter {
     final needleAngle = startAngle + sweepAngle * (speed / 240);
     final needleLength = radius - 30;
 
+
     final needlePaint = Paint()
       ..color = Colors.lightBlueAccent
       ..strokeWidth = 4;
