@@ -284,6 +284,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
 
               onUpdate: () {
                 setState(() {
+
                   _distance = tracker.totalKm;
                   _elapsedTime = tracker.elapsedTime;
 
