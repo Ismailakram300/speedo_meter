@@ -200,6 +200,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
                           markers: _markers.values.toSet(),
                         ),
                       ),
+
               ),
             ),
 
