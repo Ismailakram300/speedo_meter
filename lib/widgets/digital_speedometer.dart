@@ -5,8 +5,6 @@ class DigitalSpeedometer extends StatefulWidget {
   final double speed;
   final double totalDistance;
 
-
-
   const DigitalSpeedometer({
     super.key,
 
