@@ -283,6 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: GradientBackground(
 
 
+
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
