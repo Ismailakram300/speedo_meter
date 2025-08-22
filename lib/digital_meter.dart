@@ -128,6 +128,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
                     color: Color(0xff68DAE4), // Border color
                     width: 2.0,
                   ),
+
                 ),
 
                 height: 300,
