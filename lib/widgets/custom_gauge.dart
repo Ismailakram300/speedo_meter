@@ -115,6 +115,7 @@ class GaugePainter extends CustomPainter {
 
 
     final needlePaint = Paint()
+
       ..color = Colors.lightBlueAccent
       ..strokeWidth = 4;
 
