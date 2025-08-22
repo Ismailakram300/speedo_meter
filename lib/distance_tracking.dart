@@ -29,7 +29,6 @@ class DistanceTracker {
 
   Stream<Position>? _positionStream;
   StreamSubscription<Position>? _subscription;
-
   TrackingState _state = TrackingState.stopped;
   double get totalKm => totalDistance / 1000;
   Position? get currentPosition => lastPosition;
