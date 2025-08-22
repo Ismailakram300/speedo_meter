@@ -312,7 +312,6 @@ class GaugePainter extends CustomPainter {
     needlePath.lineTo(
       needleTip.dx - needleWidth * math.sin(speedAngle),
       needleTip.dy + needleWidth * math.cos(speedAngle),
-
     );
     needlePath.lineTo(
       center.dx + needleWidth * math.sin(speedAngle),
