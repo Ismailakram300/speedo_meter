@@ -8,7 +8,6 @@ import 'Services/current_location_map.dart';
 
 import 'digital_meter.dart';
 import 'gauge_meter.dart';
-
 class BottomNavigationBarItemScreen extends StatefulWidget {
   const BottomNavigationBarItemScreen({super.key});
 
