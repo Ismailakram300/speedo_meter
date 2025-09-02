@@ -917,6 +917,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       0,
                       0,
                       0,
+
                     ), // Remove default ListTile padding
                     title: Padding(
                       padding: const EdgeInsets.fromLTRB(5,5, 5,15),
