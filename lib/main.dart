@@ -106,6 +106,7 @@ class TripStatsCard extends StatelessWidget {
            // const SizedBox(height:14),
 
 
+
           ],
         ),
       ),
