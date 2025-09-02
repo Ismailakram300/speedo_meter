@@ -120,6 +120,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
               ],
             ),
           ],
+
         ),
       ),
     },
