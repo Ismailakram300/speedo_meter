@@ -319,6 +319,7 @@ class GaugePainter extends CustomPainter {
     );
 
 
+
     needlePath.close();
     canvas.drawPath(needlePath, needlePaint);
 
