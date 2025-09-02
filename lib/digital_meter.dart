@@ -119,6 +119,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
 
             Padding(
               padding: const EdgeInsets.all(14.0),
+
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
