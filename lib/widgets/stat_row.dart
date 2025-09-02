@@ -25,6 +25,7 @@ class StatRow extends StatelessWidget {
           height: 80,
           color: Colors.cyan.shade50,
           child: Column(
+
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
