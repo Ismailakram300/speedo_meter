@@ -18,6 +18,7 @@ class StatRow extends StatelessWidget {
 
   Widget _buildStatBox(String title, String value) {
     return Expanded(
+
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
