@@ -267,6 +267,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
                   value1: '${DistanceTracker().totalKm.toStringAsFixed(2)} km',
                   title2: 'Top Speed',
                   value2:
+
                   '${DistanceTracker().topSpeed.toStringAsFixed(1)} km/h',
                 ),
                 StatRow(
