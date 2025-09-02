@@ -28,6 +28,7 @@ import '../main.dart';
       });
     }
 
+
     @override
     void dispose() {
       _uiTimer?.cancel();
