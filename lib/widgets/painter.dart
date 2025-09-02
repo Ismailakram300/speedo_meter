@@ -333,6 +333,7 @@ class GaugePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5;
     canvas.drawCircle(center, 12, hubBorderPaint);
+
   }
 
 
