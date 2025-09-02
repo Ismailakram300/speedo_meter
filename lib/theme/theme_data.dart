@@ -8,6 +8,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
 
 
+
         backgroundColor: Color(0xff68DAE4),
         elevation: 4,
         titleTextStyle: TextStyle(
