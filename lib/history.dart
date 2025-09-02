@@ -194,6 +194,7 @@ class HistoryScreen extends StatelessWidget {
                         //         Column(
                         //           crossAxisAlignment: CrossAxisAlignment.start,
                         //           children: [
+
                         //             Row(
                         //               children: [
                         //                 Text("Start", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
