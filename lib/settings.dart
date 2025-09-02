@@ -265,6 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+
                   ),
                   child: Text("Exit", style: TextStyle(color: Colors.white)),
                 ),
