@@ -12,6 +12,7 @@ class DistanceTracker {
   double totalDistance = 0.0;
   Position? lastPosition;
   bool _isTracking = false;
+
   double _currentSpeed = 0.0;
   double get currentSpeed => _currentSpeed;
   double _topSpeed = 0.0;
