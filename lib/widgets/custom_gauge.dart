@@ -96,6 +96,7 @@ class GaugePainter extends CustomPainter {
             color: Colors.white,
             fontSize: 12,
           ),
+
         ),
         textDirection: TextDirection.ltr,
       );

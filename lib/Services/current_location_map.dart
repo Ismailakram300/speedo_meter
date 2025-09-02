@@ -185,6 +185,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
                   ),
                 ),
                 child: _currentPosition == null
+
                     ? const Center(child: CircularProgressIndicator())
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(11),
