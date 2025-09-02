@@ -9,6 +9,7 @@ class LocationService {
     try {
       bool serviceEnabled;
 
+      
 
       LocationPermission permission;
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
