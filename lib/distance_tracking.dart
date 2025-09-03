@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 enum TrackingState { stopped, running, paused }
 
 class DistanceTracker {
+
   static final DistanceTracker _instance = DistanceTracker._internal();
   factory DistanceTracker() => _instance;
   DistanceTracker._internal();
