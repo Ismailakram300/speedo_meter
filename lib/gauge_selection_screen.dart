@@ -102,6 +102,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
                     ),
                   ),
                   gradient: LinearGradient(
+
                     colors: <Color>[
                       Color(0xFFFF6B78),
                       Color(0xFFFF6B78),
