@@ -174,6 +174,7 @@ class HistoryScreen extends StatelessWidget {
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                         // child: Column(
+
                         //   crossAxisAlignment: CrossAxisAlignment.start,
                         //   children: [
                         //     // Start
