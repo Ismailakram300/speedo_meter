@@ -90,6 +90,7 @@ class TripStatsCard extends StatelessWidget {
             const SizedBox(height: 13),
             Row(
               children: [
+
                 _StatColumn(
                   label: 'Avg Speed',
                   value: avgSpeed,
