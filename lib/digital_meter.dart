@@ -100,6 +100,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
   }
 
   @override
+
   void dispose() {
     _uiTimer?.cancel();
     super.dispose();
