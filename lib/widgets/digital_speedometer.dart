@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 class DigitalSpeedometer extends StatefulWidget {
   final double speed;
+
   final double totalDistance;
 
   const DigitalSpeedometer({

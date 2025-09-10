@@ -8,6 +8,7 @@ class DistanceTracker {
 
   static final DistanceTracker _instance = DistanceTracker._internal();
   factory DistanceTracker() => _instance;
+
   DistanceTracker._internal();
 
   double totalDistance = 0.0;
