@@ -78,6 +78,7 @@ class TripStatsCard extends StatelessWidget {
                   label: 'Duration',
                   value: duration,
                   unit: '',
+
                 ),
                 _VerticalDivider(),
                 _StatColumn(
