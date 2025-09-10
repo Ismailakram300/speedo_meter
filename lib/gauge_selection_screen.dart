@@ -81,6 +81,7 @@ class _GaugeSelectionScreenState extends State<GaugeSelectionScreen> {
         height: 300,
         child: SfRadialGauge(
           axes: <RadialAxis>[
+
             RadialAxis(
               pointers: <GaugePointer>[
                 NeedlePointer(
