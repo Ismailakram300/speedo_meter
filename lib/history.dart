@@ -159,6 +159,7 @@ class HistoryScreen extends StatelessWidget {
                               backgroundColor: Colors.white,
                               child: Icon(Icons.arrow_forward, color: Color(0xff68DAE4)),
                             ),
+
                           ],
                         ),
                       ),
