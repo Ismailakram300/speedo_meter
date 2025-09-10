@@ -897,6 +897,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(
               height: 60, // ⬅️ Adjust height if needed
               child: Card(
+
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
