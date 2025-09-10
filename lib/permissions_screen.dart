@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class PermissionScreen extends StatelessWidget {
 
   final bool isGpsOn;
+
   final bool isLocationAllowed;
 
   const PermissionScreen({
