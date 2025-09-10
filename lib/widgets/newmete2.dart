@@ -249,6 +249,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
         ],
       ),
       body: SingleChildScrollView(
+
         child: Column(
           children: [
             Center(
