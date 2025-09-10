@@ -10,6 +10,8 @@ import '../main.dart';
   class TrackingControls extends StatefulWidget {
     final VoidCallback? onUpdate;
 
+
+
     const TrackingControls({Key? key, this.onUpdate}) : super(key: key);
 
     @override
