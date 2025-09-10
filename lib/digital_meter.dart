@@ -82,6 +82,7 @@ class _DigitalSpeedScreenState extends State<DigitalSpeedScreen> {
         _speed = speed;
       });
     };
+
   }
 
   void _requestPermissionAndSetup() async {
