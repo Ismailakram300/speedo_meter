@@ -246,6 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     height: 40,
                     width: 70,
                     child: Center(
+
                       child: Text(
                         "CANCEL",
                         style: TextStyle(
