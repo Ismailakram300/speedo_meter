@@ -8,6 +8,7 @@ class StatRow extends StatelessWidget {
   final String title2;
   final String value2;
 
+
   const StatRow({
     Key? key,
     required this.title1,
