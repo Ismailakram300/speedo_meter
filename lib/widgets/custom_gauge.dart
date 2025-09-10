@@ -78,6 +78,7 @@ class GaugePainter extends CustomPainter {
       final p2 = Offset(
         center.dx + radius * cos(angle),
         center.dy + radius * sin(angle),
+
       );
 
       canvas.drawLine(
