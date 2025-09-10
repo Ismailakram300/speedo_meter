@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData get theme {
     return ThemeData(
+
       primaryColor:  Color(0xff68DAE4),
       scaffoldBackgroundColor: Colors.white,
       appBarTheme: AppBarTheme(
