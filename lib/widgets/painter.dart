@@ -296,6 +296,7 @@ class GaugePainter extends CustomPainter {
     final needleLength = radius * 0.79;
     final needleWidth = 8;
 
+
     final needleTip = Offset(
       center.dx + needleLength * math.cos(speedAngle),
       center.dy + needleLength * math.sin(speedAngle),
