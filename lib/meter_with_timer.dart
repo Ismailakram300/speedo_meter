@@ -8,6 +8,7 @@ class FullscreenGaugePage extends StatelessWidget {
 
   final double speed;
 
+
   const FullscreenGaugePage({Key? key, required this.speed}) : super(key: key);
 
 
