@@ -166,6 +166,7 @@ class _CurrentLocationMapState extends State<CurrentLocationMap>
             );
           }
         },
+
         child: const Icon(Icons.my_location),
       ),
       body: SingleChildScrollView(
