@@ -238,7 +238,6 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
             onPressed: () {
               Navigator.push(
                 context,
-
                 MaterialPageRoute(
                   builder: (context) => FullscreenGaugePage(speed: _speed),
                 ),
