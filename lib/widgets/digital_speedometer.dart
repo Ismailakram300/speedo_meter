@@ -12,8 +12,6 @@ class DigitalSpeedometer extends StatefulWidget {
 
 
 
-
-
     required this.speed,
     this.totalDistance = 0,
   });
