@@ -230,7 +230,6 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
                 });
                 await _saveGaugePreference(result);
               }
-
             },
             icon: Icon(Icons.tune),
             tooltip: 'Select Gauge Style',
