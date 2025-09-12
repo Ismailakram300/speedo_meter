@@ -236,6 +236,7 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
           ),
           IconButton(
             onPressed: () {
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
