@@ -232,8 +232,6 @@ class _SpeedometerScreen2State extends State<SpeedometerScreen2> {
               }
             },
             icon: Icon(Icons.tune),
-
-
             tooltip: 'Select Gauge Style',
           ),
           IconButton(
